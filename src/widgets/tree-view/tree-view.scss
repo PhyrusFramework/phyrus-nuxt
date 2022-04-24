@@ -1,0 +1,56 @@
+.tree-view {
+
+    .tree-view-item {
+        transition: background .3s;
+        background-color: white;
+        padding: 10px;
+        border: solid 1px lightgray;
+        font-size: 13px;
+        font-weight: bold;
+        color: var(--secondary-color);
+
+        &:hover {
+            background-color: whitesmoke;
+        }
+
+        .triangle {
+            padding: 5px 2px;
+            cursor: pointer;
+
+            > div {
+                transition: all .5s;
+                width: 0; 
+                height: 0; 
+                border-radius: 2px;
+                border-top: 6px solid transparent;
+                border-bottom: 6px solid transparent;
+                border-left: 6px solid black;
+                border-left: 6px solid var(--primary-color);
+                margin-right: 10px;
+            }
+        }
+
+        > .flex-grow {
+            cursor: pointer;
+            padding: 3px 0;
+        }
+
+        > svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &.expanded {
+        > .tree-view-item {
+
+            .triangle {
+                > div {
+                    transform: rotate(90deg);
+                }
+            }
+
+        }
+    }
+
+}

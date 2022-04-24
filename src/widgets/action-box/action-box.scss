@@ -1,0 +1,42 @@
+.action-box {
+    background-color: white;
+    box-shadow: 1px 1px 8px rgba(0,0,0,.07);
+    margin-bottom: 30px;
+    border-radius: 3px;
+
+    .footer {
+        padding: 15px 10px;
+        border-top: solid 1px rgb(230, 229, 229);
+
+        .app-button {
+            margin-left: 10px;
+
+            &.disabled {
+                background-color: lightgray;
+            }
+        }
+    }
+
+    > .title {
+        font-weight: bold;
+        padding: 15px 10px;
+        font-size: 14px;
+        border-bottom: solid 1px rgb(230, 229, 229);
+        color: var(--secondary-color);
+    }
+
+    .empty-message {
+        color: var(--gray);
+        font-weight: bold;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    > .content {
+        min-height: 150px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 15px;
+    }
+
+}

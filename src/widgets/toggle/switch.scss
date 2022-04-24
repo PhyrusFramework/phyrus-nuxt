@@ -1,0 +1,25 @@
+.switch {
+    background-color: white;
+    box-shadow: 0 0 3px rgba(0,0,0,.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    .switch-separator {
+        flex: 0;
+        transition: all .3s;
+    }
+
+    .switch-thumb {
+        display: block;
+        border-radius: 50%;
+        transition: all .3s;
+    }
+
+    &.active {
+
+        .switch-separator {
+            flex: 1;
+        }
+    }
+}

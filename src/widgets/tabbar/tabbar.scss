@@ -1,0 +1,43 @@
+.tabbar {
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+
+    .tab {
+        position: relative;
+        z-index: 2;
+        padding: 9px 15px;
+        padding-bottom: 14px;
+        font-weight: bold;
+        color: gray;
+        color: var(--gray);
+        cursor: pointer;
+        font-size: 14px;
+        border: 0;
+        transition: border .2s;
+
+        &:hover {
+            filter: brightness(.8);
+        }
+
+        &.active {
+            color: var(--primary-color);
+            border-bottom: solid 5px var(--primary-color);
+            padding-bottom: 9px;
+
+            &:hover {
+                filter: brightness(1);
+            }
+        }
+    }
+
+    .bottom-line {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 2px;
+        background-color: rgb(230, 230, 230);
+    }
+
+}

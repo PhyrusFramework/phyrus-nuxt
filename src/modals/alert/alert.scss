@@ -1,0 +1,60 @@
+.modal-alert {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    flex: 1;
+
+    .closer {
+        display: flex;
+        justify-content: flex-end;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    }
+
+    .alert-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 0 auto;
+        display: block;
+        pointer-events: none; 
+    }
+
+    p {
+        font-weight: bold;
+        text-align: center;
+        max-width: 300px;
+        padding: 0 5px;
+        margin: 0 auto;
+    }
+
+    .buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 30px;
+
+        .button-left, .button-right {
+            border-radius: 3px;
+            padding: 8px 15px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 0 5px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .button-right {
+            background: var(--secondary-color);
+        }
+
+        .button-left {
+            background: var(--primary-color);
+        }
+    }
+
+}

@@ -1,0 +1,85 @@
+.event-calendar {
+
+    .header {
+        background-color: white;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .cell {
+        background-color: white;
+        border: solid 1px whitesmoke;
+        padding: 8px 10px;
+        min-width: 60px;
+
+        &:not(.col-auto):not(.month-day) {
+            flex: 1;
+        }
+
+        .day-name {
+            font-size: 12px;
+        }
+
+        .day-number {
+            font-size: 20px;
+        }
+
+        &.hour-cell {
+            min-height: 100px;
+            padding: 0;
+
+            > span {
+                font-size: 13px;
+                display: block;
+                transform: translate(5px, -10px);
+            }
+        }
+    }
+
+    &.mode-day {
+
+        .cell {
+            border-left: none;
+            border-right: none;
+        }
+    }
+
+    &.mode-month {
+
+        .cell {
+            min-height: 100px;
+
+            &.outer {
+                background-color: whitesmoke;
+                border: solid 1px lightgray;
+            }
+
+            &.day-name {
+                height: auto;
+                min-height: 0;
+                border: none;
+                text-align: center;
+                position: relative;
+                padding-bottom: 8px !important;
+                font-size: 13px;
+            }
+
+            &.month-day {
+                padding: 0;
+            }
+
+            .day-tag {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background-color: white;
+                padding: 3px 5px;
+                border-bottom-left-radius: 5px;
+                font-size: 12px;
+            }
+        }
+
+    }
+
+}

@@ -1,0 +1,48 @@
+.carousel {
+    position: relative;
+
+    .carousel-inner {
+        overflow: hidden;
+
+        .carousel-items {
+            display: flex;
+    
+            .carousel-slide {
+                flex: 1;
+                display: flex;
+            }
+        }
+    }
+
+    .carousel-control {
+        position: absolute;
+        top: 50%;
+        top: calc(50% - 15px);
+        background-color: var(--primary-light);
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: filter .3s;
+        z-index: 40;
+
+        &.next {
+            right: -15px;
+        }
+        &.prev {
+            left: -15px;
+        }
+
+        &:hover {
+            filter: brightness(0.95)
+        }
+
+        svg {
+            color: var(--primary-color);
+            width: 35px;
+            height: 35px;
+        }
+    }
+
+}

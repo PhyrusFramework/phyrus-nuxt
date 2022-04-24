@@ -1,0 +1,43 @@
+.searchbar {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: solid 1px lightgray;
+    border-radius: var(--rounded);
+    padding: 8px;
+    position: relative;
+
+    svg {
+        color: var(--gray);
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    input {
+        border: none;
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        box-shadow: 0 0 10px rgba(0,0,0,.2);
+        background: white;
+        z-index: 10;
+
+        .suggestion {
+            padding: 8px;
+            font-size: 14px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: rgba(0,0,0,.05);
+            }
+        }
+    }
+}

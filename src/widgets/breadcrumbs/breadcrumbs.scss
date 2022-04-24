@@ -1,0 +1,29 @@
+.breadcrumbs > div {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    color: var(--gray);
+    font-size: 14px;
+
+    a {
+        text-decoration: none;
+
+        &:hover {
+            font-weight: bold;
+        }
+    }
+
+    li {
+        list-style: none;
+
+        &.active {
+            color: black;
+        }
+    }
+
+    li:not(:first-child):before {
+        content: '/';
+        margin-left: 5px;
+        color: var(--gray);
+    }
+}

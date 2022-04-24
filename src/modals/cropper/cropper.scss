@@ -1,0 +1,28 @@
+
+.cropper-modal.app-modal {
+    .app-modal-box {
+
+        .crop-image-modal {
+
+            .vue-advanced-cropper {
+                height: 70vh;
+                background-color: gray;
+            }            
+
+            .controls {
+                height: 10vh;
+
+                .app-button {
+                    margin: 0 5px;
+                }
+
+                .cancel-button {
+                    background-color: var(--secondary-color);
+                }
+
+            }
+    
+        }
+
+    }
+}

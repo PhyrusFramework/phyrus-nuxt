@@ -1,0 +1,42 @@
+.app-form {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+
+    > div {
+        padding: 0 15px;
+        margin-bottom: 15px;
+
+        > div {
+
+            margin-bottom: 15px;
+
+            .form-input {
+                margin-bottom: 10px;
+            }
+        }
+        
+    }
+
+    .slider-select {
+        box-shadow: none;
+        border: solid 1px lightgray;
+        border-radius: 5px;
+    }
+
+    .photo-picker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 150px;
+        margin: 0 auto;
+
+        .circle-image {
+            margin-bottom: 10px;
+        }
+
+        > div {
+            font-size: 13px;
+        }
+    }
+}

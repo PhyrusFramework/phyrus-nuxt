@@ -1,0 +1,89 @@
+.dots-menu-button {
+    transition: background .3s;
+    cursor: pointer;
+    position: relative;
+    border-radius: 3px;
+
+    svg {
+        transition: transform .3s;
+    }
+
+    &.background-effect:hover {
+        background: rgba(0,0,0,.1);
+    }
+
+    .dots-float-menu {
+        background: white;
+        position: absolute;
+        z-index: 20;
+        border: solid 1px rgb(230, 229, 229);
+        border-radius: 2px;
+        transition: all .3s;
+        opacity: 0;
+        pointer-events: none;
+
+        .dots-menu-option {
+            min-width: 150px;
+            padding: 6px 10px;
+            transition: background .2s;
+            border-bottom: solid 1px rgb(241, 241, 241);
+            display: flex;
+            align-items: center;
+
+            svg {
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
+            }
+
+            > div {
+                user-select: none;
+            }
+
+            &:hover {
+                background: rgba(0,0,0,.1);
+            }
+        }
+    }
+
+    &.effect-grow {
+
+        .dots-float-menu {
+            transform: scale(0.1);
+            transform-origin: 100% 0;
+            top: 60%;
+            right: 60%;
+            box-shadow: 0 0 5px rgba(0,0,0,.25);
+        }
+
+    }
+
+    &.effect-slide {
+
+        .dots-float-menu {
+            transform: scale(1, 0.1);
+            transform-origin: 50% 0;
+            top: 90%;
+            right: 0;
+            box-shadow: 2px 2px 1px rgba(0,0,0,.1);
+        }
+
+        &.open {
+
+            svg.toggle {
+                transform: rotate(180deg);
+            }
+    
+        }
+
+    }
+
+    &.open {
+
+        .dots-float-menu {
+            transform: none;
+            opacity: 1;
+            pointer-events: all;
+        }
+    }
+}

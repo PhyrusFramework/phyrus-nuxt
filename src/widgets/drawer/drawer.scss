@@ -1,0 +1,93 @@
+.drawer-container {
+    position: fixed;
+    z-index: 60;
+    width: 100%;
+    height: 100vh;
+    display: none;
+
+    .drawer-background {
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,.6);
+        opacity: 0;
+        transition: opacity .4s;
+    }
+
+    .drawer-box {
+        position: absolute;
+        top: 0;
+        right: -40%;
+        height: 100%;
+        max-width: 40%;
+        min-width: 20%;
+        z-index: 2;
+        height: 100%;
+        background-color: white;
+        transition: all .5s;
+        display: flex;
+        flex-direction: column;
+
+        > * {
+            width: 100%;
+        }
+    }
+
+    .drawer-header {
+        background-color: white;
+        padding: 15px;
+        box-shadow: 0 0px 8px rgb(0,0,0,.1);
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+
+        > div {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        svg {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    }
+
+    .drawer-component {
+        background-color: whitesmoke;
+        padding: 15px;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 60px;
+    }
+
+    &.opening {
+        display: flex;
+        opacity: 1;
+    }
+
+    &.open {
+        .drawer-background {
+            opacity: 1;
+        }
+
+        .drawer-box {
+            right: 0;
+        }
+    }
+
+    .drawer-footer {
+        background-color: white;
+        position: absolute;
+        z-index: 10;
+        box-shadow: 0 -3px 2px rgba(0,0,0,.05);
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        padding: 15px;
+    }
+}
