@@ -1,5 +1,4 @@
 import Utils from './utils';
-import { locales as def } from './locales/locales';
 
 class Translator {
 
@@ -8,11 +7,6 @@ class Translator {
     translations : any = {}
 
     initialize(locales: any, defaultLanguage: string) {
-
-        Object.keys(locales).forEach((lang: string) => {
-            if (!def[lang]) return;
-            locales[lang] = Utils.merge(def[lang], locales[lang]);
-        });
         this.locales = locales;
 
         var userLang = navigator.language.substr(0, 2);

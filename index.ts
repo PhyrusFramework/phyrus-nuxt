@@ -1,4 +1,4 @@
-import http, {HTTPError, Request} from "./src/modules/http"
+import { HTTPError, Request, http, ajax} from "./src/modules/http"
 import translate from "./src/modules/translator"
 import Utils from "./src/modules/utils"
 import Config from "./src/modules/config";
@@ -56,6 +56,7 @@ export {
     Utils,
     translate,
     http,
+    ajax,
     Config,
     App,
     Storage,
