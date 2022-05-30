@@ -1,6 +1,6 @@
 <template>
     <div class="zoom-image custom-scrollbar" v-if="displayed">
-        <svg-icon name="x" @click="close()"/>
+        <svg-icon name="heroicons-solid/x" @click="close()"/>
 
         <img :src="url" :class="{zoomed: zoomed}" @click="zoomed = !zoomed">
     </div>

@@ -14,7 +14,7 @@
 
             <component v-if="notification.component" :is="notification.component" v-bind="notification.props"/>
 
-            <svg-icon class="close" name="x" @click="closeNotification(notification)"/>
+            <svg-icon class="close" name="heroicons-solid/x" @click="closeNotification(notification)"/>
         </div>
     </div>
 </template>

@@ -7,7 +7,7 @@
         <div class="dropdown-item" @click="select(item)">
             <svg-icon v-if="item.icon" :name="item.icon" />
             <div v-html="item.content ? item.content : item.label"></div>
-            <svg-icon v-if="item.items" :name="depth > 0 ? 'chevron-right' : 'chevron-down'"/>
+            <svg-icon v-if="item.items" :name="depth > 0 ? 'heroicons-solid/chevron-right' : 'heroicons-solid/chevron-down'"/>
         </div>
 
         <div class="dropdown-children" v-if="item.items"

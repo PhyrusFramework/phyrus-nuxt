@@ -2,7 +2,7 @@
     <div class="carousel" ref="container">
 
         <div class="carousel-control prev" @click="prevPage()" v-show="currentPage > 0">
-            <svg-icon name="chevron-left"/>
+            <svg-icon name="heroicons-solid/chevron-left"/>
         </div>
 
         <div class="carousel-inner">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="carousel-control next" @click="nextPage(true)" v-show="currentPage < slides.length - 1">
-            <svg-icon name="chevron-right"/>
+            <svg-icon name="heroicons-solid/chevron-right"/>
         </div>
 
     </div>

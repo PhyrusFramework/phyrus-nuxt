@@ -1,6 +1,6 @@
 <template>
     <div class="searchbar">
-        <svg-icon name="search" @click="search()"/>
+        <svg-icon name="heroicons-solid/search" @click="search()"/>
 
         <input :placeholder="placeholder ? placeholder : $t('generic.search')" 
         @keyup.enter="search()"

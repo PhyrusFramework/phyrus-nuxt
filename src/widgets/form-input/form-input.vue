@@ -65,7 +65,8 @@
             @keyup.enter="onSubmit()"
             ref="passwordInput">
 
-            <svg-icon :name="displayContent ? 'eye-off' : 'eye'" @click="changePasswordVisibility()"/>
+            <svg-icon :name="displayContent ? 'heroicons-solid/eye-off' : 'heroicons-solid/eye'" 
+            @click="changePasswordVisibility()"/>
         </div>
 
         <slider-select

@@ -1,7 +1,7 @@
 <template>
     <div class="modal-alert">
         <div class="closer" v-if="!cancelable">
-            <svg-icon name="x" @click="close()"/>
+            <svg-icon name="heroicons-outline/x" @click="close()"/>
         </div>
 
         <div class="flex-grow flex-center flex-col">

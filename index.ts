@@ -49,6 +49,7 @@ import Burger from "./src/widgets/burger/burger.vue";
 import EventCalendar from "./src/widgets/event-calendar/event-calendar.vue";
 import Checkbox from "./src/widgets/checkbox/checkbox.vue";
 import Validator from "./src/modules/validator";
+import PageContent from "./src/widgets/page-content/page-content.vue";
 
 export {
     AppComponent,
@@ -63,6 +64,7 @@ export {
     Time,
     EventListener,
     Validator,
+    PageContent,
 
     // Types
     Table,

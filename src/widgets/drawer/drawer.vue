@@ -4,7 +4,7 @@
         <div class="drawer-box" :style="{'max-width': maxWidth}">
             <div class="drawer-header">
                 <div>{{title}}</div>
-                <svg-icon name="x" @click="closeButton()" />
+                <svg-icon name="heroicons-solid/x" @click="closeButton()" />
             </div>
 
             <div class="drawer-component">

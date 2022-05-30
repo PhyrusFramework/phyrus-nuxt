@@ -1,6 +1,6 @@
 <template>
     <div class="checkbox" :class="{active: value}" @click="onclick()">
-        <svg-icon name="heroicons-outline/check"/>
+        <svg-icon name="heroicons-solid/check"/>
     </div>
 </template>
 

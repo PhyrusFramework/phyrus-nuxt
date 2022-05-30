@@ -1,5 +1,5 @@
 <template>
-    <svg-icon name="chevron-left" source="heroicons-solid" :style="getStyle()" @click="doClick()"/>
+    <svg-icon name="heroicons-solid/chevron-left" source="heroicons-solid" :style="getStyle()" @click="doClick()"/>
 </template>
 
 <script lang="ts">

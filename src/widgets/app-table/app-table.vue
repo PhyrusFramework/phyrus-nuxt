@@ -24,7 +24,7 @@
             :class="{ordering: table.order.column == col.key, sortable: table.settings.columnsSortable && col.sortable !== false}"
             :style="{flex: colFlex(col)}" @click="orderBy(col)">
               <div>{{ col.label }}</div>
-              <svg-icon :name="'chevron-' + (table.order.order == 'ASC' ? 'up' : 'down')"/>
+              <svg-icon :name="'heroicons-solid/chevron-' + (table.order.order == 'ASC' ? 'up' : 'down')"/>
             </div>
 
           </div>

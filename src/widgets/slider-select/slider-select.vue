@@ -4,7 +4,7 @@
         <div class="slider-select-selected" 
         :class="{'uses-placeholder': !selected}"
         v-html="selected ? (selected.content ? selected.content : selected.value) : (placeholder ? placeholder : '')"></div>
-        <svg-icon name="chevron-down" class="text-primary" />
+        <svg-icon name="heroicons-solid/chevron-down" class="text-primary" />
     </div>
 
     <div class="slider-select-dropdown" v-if="options">

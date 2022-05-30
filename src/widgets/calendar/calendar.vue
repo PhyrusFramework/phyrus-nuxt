@@ -1,13 +1,13 @@
 <template>
     <div class="calendar">
         <div class="month flex-row">
-            <svg-icon name="chevron-left" @click="prevMonth()" />
+            <svg-icon name="heroicons-solid/chevron-left" @click="prevMonth()" />
 
             <div class="flex-grow">
                 {{ title() }}
             </div>
 
-            <svg-icon name="chevron-right" @click="nextMonth()" />
+            <svg-icon name="heroicons-solid/chevron-right" @click="nextMonth()" />
         </div>
 
         <div class="table">

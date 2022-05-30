@@ -13,7 +13,7 @@
 
             <slot @click="select()" v-bind:item="item"/>
 
-            <svg-icon name="check" v-if="isSelected()" />
+            <svg-icon name="heroicons-solid/check" v-if="isSelected()" />
         </div>
 
         <div class="tree-view-children" v-if="avoidFirst || expanded">

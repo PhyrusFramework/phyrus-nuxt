@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="flex-grow" />
-            <svg-icon class="close" name="x" source="heroicons-solid" @click="close()"/>
+            <svg-icon class="close" name="heroicons-solid/x" source="heroicons-solid" @click="close()"/>
         </div>
 
         <search-bar v-model="modelName" v-if="searchbar" @write="resetSearch()"/>
@@ -16,7 +16,7 @@
         <infinite-scroll :list="items" :onLoadMore="doSearch" :emptyMessage="emptyMessage" ref="scroller">
             <div class="model-item" v-for="(it, index) in items" :key="index" @click="select(it)" :class="{active: isSelected(it)}">
 
-                <svg-icon class="checked" name="check" source="heroicons-solid" />
+                <svg-icon class="checked" name="heroicons-solid/check" source="heroicons-solid" />
 
                 <div class="simple-item" v-if="item(it).content" v-html="item(it).content"/>
 

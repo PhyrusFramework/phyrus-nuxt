@@ -1,4 +1,5 @@
 import Utils from './utils';
+import defaultLocales from '../translations/locales';
 
 class Translator {
 
@@ -7,13 +8,13 @@ class Translator {
     translations : any = {}
 
     initialize(locales: any, defaultLanguage: string) {
-        this.locales = locales;
+        this.locales = Utils.merge(defaultLocales, locales);
 
         var userLang = navigator.language.substr(0, 2);
         this.currentLanguage = (Object.keys(locales)).includes(userLang) ?
             userLang : defaultLanguage;
 
-        this.translations = locales[this.currentLanguage];
+        this.translations = this.locales[this.currentLanguage];
     }
 
     changeLanguage(language: string) {

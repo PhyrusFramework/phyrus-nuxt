@@ -49,6 +49,7 @@ export type HTTPClient = {
     },
 
     setToken: (token: string, refreshToken?: string) => void,
+    logout: () => void,
     getToken: () => string | null,
     getRefreshToken: () => string | null,
 
@@ -81,7 +82,11 @@ const generateHTTP = () : HTTPClient => {
                 refresh: refreshToken ? refreshToken : null
             }
     
-            Storage.set('session', atob(JSON.stringify(this.tokens)));
+            Storage.set('session', btoa(JSON.stringify(this.tokens)));
+        },
+
+        logout() {
+            Storage.remove('session');
         },
     
         getToken() {
@@ -90,7 +95,7 @@ const generateHTTP = () : HTTPClient => {
             const saved = Storage.get('session');
             if (!saved) return null;
     
-            this.tokens = JSON.parse(btoa(saved));
+            this.tokens = JSON.parse(atob(saved));
             if (!this.tokens || !this.tokens.session) return null;
             return this.tokens.session;
         },
@@ -218,106 +223,90 @@ const generateHTTP = () : HTTPClient => {
                         code: error.response ? error.response.status : 0,
                         data: error.response ? error.response.data : {}
                     }
-    
-                    if (!this.refreshingToken && this.checkTokenExpired) {
-    
-                        // Try to refresh token
-                        this.checkTokenExpired(err)
-                        .then( (expired: boolean) => {
-    
-                            if (expired) {
-    
-                                if (request.refreshConsumed) {
-                                    if (request.promise) {
-                                        request.promise.reject();
-                                    } else {
-                                        reject();
-                                    }
-                                    return;
-                                }
-    
-                                this.refreshingToken = true;
-                                request.refreshConsumed = true;
-                                this.nextRequestIsRefresh = true;
-    
-                                if (this.refreshToken) {
-    
-                                    const tk = this.getRefreshToken();
-    
-                                    if (tk) {
-    
-                                        this.refreshToken(tk)
-                                        .then((refreshed: boolean) => {
-    
-                                            if (!refreshed) {
-                                                for(let req of this.pendingRequests) {
-                                                    if (req.promise) {
-                                                        req.promise.reject();
-                                                    }
-                                                }
-                                                this.refreshingToken = false;
-                                            } else {
-                                                for(let req of this.pendingRequests) {
-                                                    this.req(req)
-                                                    .then((data) => {
-                                                        if (req.promise) {
-                                                            req.promise.resolve(data);
-                                                        }
-                                                    }).catch(err => {
-                                                        if (req.promise) {
-                                                            req.promise.reject(err);
-                                                        }
-                                                    });
-                                                }
-                                                this.refreshingToken = false;
-                                            }
-    
-                                        })
-                                        .catch((err) => {
-                                            for(let req of this.pendingRequests) {
-                                                if (req.promise) {
-                                                    req.promise.reject(err);
-                                                }
-                                            }
-                                        });
-    
-                                        this.req(request).then((data:any) => {
-                                            this.refreshingToken = false;
-                                            resolve(data);
-                                        })
-                                        .catch(err2 => {
-                                            this.refreshingToken = false;
-                                            reject(err2);
-                                        });
-                                    }
-                                    else {
-                                        reject(err);
-                                    }
-    
-                                }
-                                else {
-                                    reject(err);
-                                }
-    
-                            } else {
-                                reject(err);
-                            }
-    
-                        });
-    
-                    } else {
-    
-                        if (!request.isRefresh) {
-                            request.promise = {
-                                resolve: resolve,
-                                reject: reject
-                            };
-                            this.pendingRequests.push(request);
-                        } else {
-                            reject(err);
-                        }
-    
+
+                    if (request.isRefresh) {
+                        reject(err);
+                        return;
                     }
+
+                    if (!this.checkTokenExpired) {
+                        reject(err);
+                        return;
+                    }
+
+                    if (!this.refreshToken) {
+                        reject(err);
+                        return;
+                    }
+
+                    if (this.refreshingToken) {
+                        request.promise = {
+                            resolve: resolve,
+                            reject: reject
+                        }
+                        this.pendingRequests.push(request);
+                        return;
+                    }
+
+                    if (request.refreshConsumed) {
+                        reject(err);
+                        return;
+                    }
+
+                    this.checkTokenExpired(err)
+                    .then( (expired: boolean) => {
+
+                        if (!expired) {
+                            reject(err);
+                            return;
+                        }
+
+                        this.refreshingToken = true;
+                        request.refreshConsumed = true;
+                        this.nextRequestIsRefresh = true;
+
+                        const finishPendingRequests = () => {
+                            for(let r of this.pendingRequests) {
+                                r.promise!.reject();
+                            }
+                            this.pendingRequests = [];
+                        }
+
+                        const tk = this.getRefreshToken();
+                        
+                        if (!tk) {
+                            this.refreshingToken = false;
+                            reject(err);
+                            finishPendingRequests();
+                        }
+
+                        this.refreshToken!(tk ? tk : undefined)
+                        .then((refreshed) => {
+
+                            this.refreshingToken = false;
+
+                            if (!refreshed) {
+                                reject(err);
+                                finishPendingRequests();
+                                return;
+                            }
+
+                            this.req(request);
+                            for(let r of this.pendingRequests) {
+                                this.req(r);
+                            }
+                            this.pendingRequests = [];
+
+                        })
+                        .catch(() => {
+                            this.refreshingToken = false;
+                            reject(err);
+                            finishPendingRequests();
+                        })
+                        
+
+                    })
+                    .catch(() => reject(err));
     
                 });
     
