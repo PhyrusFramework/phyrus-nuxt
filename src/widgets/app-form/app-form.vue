@@ -1,41 +1,40 @@
 <template>
-    <div class="app-form" v-if="cols">
+    <div class="app-form" v-if="rows">
 
-        <div v-for="(col, index) in cols" :key="index" class="col-1" :class="classForColumn(col)">
+        <div class="row row-padding" v-for="(row, index) in rows" :key="index">
 
-            <div class="app-form-input" v-for="(field, index) in getColumnFields(col)" :key="index" :class="classForField(field)">
+            <div v-for="(col) in row" :key="col.field.name" class="col-1" :class="classForColumn(col)" 
+            :style="{display: (col.field && (!col.field.condition || col.field.condition() || col.field.conditionPlaceholder) ) ? 'block' : 'none'}">
 
-                <form-input v-if="['text', 
-                'password', 
-                'email', 
-                'number', 
-                'textarea', 
-                'checkbox', 
-                'select', 
-                'date', 
-                'color', 
-                'phone', 
-                'country', 
-                'editor',
-                'radio'].includes(field.type)" 
-                v-model="field.model[field.name]" v-bind="field.props" :type="field.type"
-                :error="field.error"/>
+                <div v-if="displayConditionPlaceholder(col)" 
+                v-html="getConditionPlaceholder(col)"/>
 
-                <dropzone class="photo-picker" :clickable="true" 
-                v-bind="field.props ? field.props : {}"
-                v-if="['image', 'photo'].includes(field.type)" @drop="fileSelected(field, $event)">
-                    <circle-image size="120" :src="field.fileSrc"/>
-                    <div>{{ $t('media.select') }}</div>
-                </dropzone>
+                <div class="app-form-input" :class="classForField(col.field)"
+                v-if="col.field && (!col.field.condition || col.field.condition())">
 
-                <div class="form-input" v-if="field.type == 'custom'">
-                    <div class="form-input-label" v-if="field.props.label">{{ field.props.label }}</div>
-                    <div v-if="field.content" v-html="field.content(field.model)" v-bind="field.props ? field.props : {}"/>
-                    <component v-if="field.component" :is="field.component" v-bind="field.props"/>
+                    <form-input 
+                    v-if="!['image', 'photo', 'custom'].includes(col.field.type)" 
+                    v-model="col.field.model[col.field.name]" v-bind="col.field.props" :type="col.field.type"
+                    :error="col.field.error"
+                    @change="valueChanged(col.field)"/>
+
+                    <dropzone class="photo-picker" :clickable="true" 
+                    @change="valueChanged(field)"
+                    v-bind="col.field.props ? col.field.props : {}"
+                    v-if="['image', 'photo'].includes(col.field.type)" @drop="fileSelected(col.field, $event)">
+                        <circle-image size="120" :src="col.field.fileSrc"/>
+                        <div>{{ $t('media.select') }}</div>
+                    </dropzone>
+
+                    <div class="form-input" v-if="col.field.type == 'custom'">
+                        <div class="form-input-label" v-if="col.field.props.label">{{ col.field.props.label }}</div>
+                        <div v-if="col.field.content" v-html="col.field.content(col.field.model)" v-bind="col.field.props ? col.field.props : {}"/>
+                        <component v-if="col.field.component" :is="col.field.component" v-bind="col.field.props"/>
+                    </div>
+
                 </div>
 
             </div>
-
         </div>
 
     </div>

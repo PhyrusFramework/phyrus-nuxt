@@ -1,5 +1,5 @@
 <template>
-    <div class="app-button" :class="{disabled: disabled}" @click="clickAction()">
+    <div class="app-button" :class="{disabled: isDisabled(true)}" @click="clickAction()">
         <svg-icon class="icon-left" v-if="!loading && lefticon" v-bind="lefticon"/>
         <div v-if="!loading" class="flex-row">
             <div v-if="content" v-html="content" />
@@ -25,6 +25,7 @@
     cursor: pointer;
     user-select: none;
     transition: background .3s;
+    box-sizing: content-box;
 }
 .app-button:hover {
     filter: brightness(0.95);

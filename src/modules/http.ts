@@ -187,11 +187,12 @@ const generateHTTP = () : HTTPClient => {
     
                 Object.keys(request.headers)
                 .forEach((key: string) => {
-                    headers[key] = this.globalHeaders[key];
+                    headers[key] = request.headers[key];
                 });
     
                 let dta : any = data;
                 if (headers['Content-Type'] == 'multipart/form-data') {
+                    delete headers['Content-Type'];
                     let form = new FormData();
                     Object.keys(request.data).forEach((key: string) => {
                         if (!Array.isArray(request.data[key]))
@@ -230,11 +231,6 @@ const generateHTTP = () : HTTPClient => {
                     }
 
                     if (!this.checkTokenExpired) {
-                        reject(err);
-                        return;
-                    }
-
-                    if (!this.refreshToken) {
                         reject(err);
                         return;
                     }
@@ -278,6 +274,11 @@ const generateHTTP = () : HTTPClient => {
                             this.refreshingToken = false;
                             reject(err);
                             finishPendingRequests();
+                        }
+
+                        if (!this.refreshToken) {
+                            reject(err);
+                            return;
                         }
 
                         this.refreshToken!(tk ? tk : undefined)

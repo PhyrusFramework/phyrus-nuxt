@@ -55,6 +55,7 @@ export default Vue.extend({
       },
       selectSuggestion(suggestion: string) {
         this.$emit('input', suggestion);
+        this.$emit('suggestionSelected', suggestion);
         this.suggestions = null;
       },
       search() {

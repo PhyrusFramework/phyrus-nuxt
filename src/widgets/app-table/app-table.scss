@@ -36,12 +36,14 @@ $cell-header-height: 32px;
         .table-item-card-right {
             margin: 10px 0;
             display: flex;
-            align-items: center;
+            align-items: stretch;
         }
     
         .table-item-card-left,
         .table-item-card-right {
             height: $cell-data-height;
+            display: flex;
+            align-items: center;
         }
     
         .table-item-card-left,
@@ -205,6 +207,7 @@ $cell-header-height: 32px;
     .pagination {
         display: flex;
         align-items: center;
+        margin-top: 10px;
 
         &-left, &-right {
             display: flex;
@@ -234,6 +237,22 @@ $cell-header-height: 32px;
             
             > * {
                 margin-left: 5px;
+            }
+
+            > svg {
+                width: 35px;
+                height: 35px;
+                background-color: white;
+                padding: 4px;
+                border: solid 1px whitesmoke;
+                cursor: pointer;
+                transition: filter .2s;
+                color: #4e4e4e;
+                fill: #4e4e4e;
+
+                &:hover {
+                    filter: brightness(.96);
+                }
             }
         }
     }

@@ -14,100 +14,215 @@ export default Vue.extend({
 
     data() {
         let data : {
-            cols: any[]|null
+            rows: (any[])[]|null,
+            previousValues: any
+            valuesChanged: string[]
         } = {
-            cols: null
+            rows: null,
+            previousValues: {},
+            valuesChanged: []
         }
         return data;
     },
 
     created() {
-        this.initialize();
+        this.initialize(true, true);
     },
 
     methods: {
 
-        initialize() {
-            this.cols = [];
+        initialize(inmediate: boolean = false, copyPreviousValues: boolean = false) {
 
-            for(let col of this.form()) {
+            return new Promise((resolve, reject) => {
 
-                if (!col.fields) continue;
+                this.rows = [];
 
-                let c : any = {
-                    width: col.width ? col.width : '100%',
-                    fields: []
-                }
+                setTimeout(() => {
 
-                for(let field of col.fields) {
+                    this.rows = [];
+                    let accumulative = 0;
+                    let accuIndex = 0;
 
-                    let model : any = {};
-                    if (field.model) {
-                        model = field.model;
-                    } else {
-                        model[field.name] = field.value ? field.value : '';
-                    }
+                    for(let col of this.form()) {
 
-                    let f : {
-                        name: string,
-                        props: any,
-                        type: string,
-                        model: any,
-                        validate: (value: any) => any|null,
-                        error: any,
-                        class: string,
-                        condition: () => boolean,
-                        content: () => string | null,
-                        component: any | null,
-                        required: boolean,
+                        if (!col.fields) continue;
 
-                        // For file
-                        fileSrc: any
-                    } = {
-                        model: model,
-                        name: field.name ? field.name : '',
-                        type: field.type ? field.type : 'text',
-                        validate: field.validate ? field.validate : null,
-                        error: null,
-                        props: {},
-                        class: field.class ? field.class : '',
-                        condition: field.condition ? field.condition : () => true,
-                        content: field.content ? field.content : null,
-                        component: field.component ? field.component : null,
-                        required: field.required ? true : false,
+                        let index = 0;
+                        for(let field of col.fields) {
 
-                        // For file
-                        fileSrc: field.src ? field.src : null
-                    }
+                            let c : any = {
+                                width: col.width ? col.width : '100%',
+                                field: null
+                            }
 
-                    Object.keys(field)
-                    .forEach((k: string) => {
-                        if (['name', 'value', 'model', 'validate', 'condition', 'class', 'content', 'component'].includes(k)) {
-                            return;
+                            let model : any = {};
+                            if (field.model) {
+                                model = field.model;
+                            } else {
+                                model[field.name] = field.value ? field.value : '';
+                            }
+
+                            if (copyPreviousValues && field.name) {
+                                this.previousValues[field.name] = model[field.name];
+                            }
+
+                            const ref = this;
+
+                            let f : {
+                                model: any,
+                                name: string,
+                                props: any,
+                                type: string,
+                                validate: (value: any) => any|null,
+                                error: any,
+                                class: string,
+                                condition: () => boolean,
+                                conditionPlaceholder: string|null,
+                                content: () => string | null,
+                                component: any | null,
+                                required: boolean,
+                                change: (value: any) => void,
+
+                                // For file
+                                fileSrc: any
+                            } = {
+                                model: model,
+                                name: field.name ? field.name : '',
+                                type: field.type ? field.type : 'text',
+                                validate: field.validate ? field.validate : null,
+                                error: null,
+                                props: {},
+                                class: field.class ? field.class : '',
+                                condition: field.condition ? field.condition : () => true,
+                                conditionPlaceholder: field.conditionPlaceholder ? field.conditionPlaceholder : null,
+                                content: field.content ? field.content : null,
+                                component: field.component ? field.component : null,
+                                required: field.required,
+                                change(value: any) {
+
+                                    if (field.change) {
+                                        field.change(value);
+                                    }
+
+                                    let same: boolean = false;
+                                    const a = this.model[this.name];
+                                    const b = ref.previousValues[this.name];
+                                    if (field.comparer) {
+                                        same = field.comparer(a, b);
+                                    } else {
+                                        same = a === b;
+                                    }
+
+                                    if (same) {
+
+                                        const index = ref.valuesChanged.indexOf(this.name);
+
+                                        if (index >= 0) {
+                                            ref.valuesChanged.splice(index, 1);
+                                        }
+
+                                        ref.$emit('change', ref.valuesChanged.length > 0);
+
+                                    } else {
+
+                                        if (!ref.valuesChanged.includes(this.name)) {
+                                            ref.valuesChanged.push(this.name);
+                                        }
+
+                                        ref.$emit('change', true);
+
+                                    }
+                                },
+
+                                // For file
+                                fileSrc: field.src ? field.src : null
+                            }
+
+                            Object.keys(field)
+                            .forEach((k: string) => {
+                                if (['name', 'value', 'model', 'validate', 'condition', 'class', 'content', 'conditionPlaceholder'].includes(k)) {
+                                    return;
+                                }
+
+                                if (k == 'componentProps'){
+                                    Object.keys(field.componentProps)
+                                    .forEach((k: string) => {
+                                        f.props[k] = field.componentProps[k];
+                                    })
+                                    return;
+                                }  
+
+                                f.props[k] = field[k];
+                            });
+
+                            c.field = f;
+
+                            accumulative = Number( c.width.replace('%', '') );
+                            if (accumulative >= 100) {
+                                if (accumulative > 100)
+                                    accumulative -= 100;
+                                accuIndex = this.rows.length;
+                                index = 0;
+                            }
+
+                            const rowIndex = accuIndex + index;
+
+                            if (this.rows.length > rowIndex) {
+                                this.rows[rowIndex].push(c);
+                            } else {
+                                this.rows.push([c]);
+                            }
+        
+                            ++ index;
+
                         }
 
-                        f.props[k] = field[k];
-                    });
-
-                    if (field.props) {
-                        Object.keys(field.props)
-                        .forEach((k: string) => {
-                            f.props[k] = field.props[k];
-                        });
                     }
 
-                    c.fields.push(f);
+                    // Fix rows
+                    let aux = this.rows;
+                    this.rows = [[]];
 
-                }
+                    for(let row of aux) {
+                        for(let col of row) {
+                            this.rows[0].push(col);
+                        }
+                    }
 
-                this.cols!.push(c);
-            }
+                    resolve(true);
 
+                }, inmediate ? 0 : 5);
+
+            });
+
+        },
+
+        displayConditionPlaceholder(col: any) {
+            if (!col.field) return false;
+
+            let f : any = col.field;
+            if (!f.conditionPlaceholder) return false;
+            if (!f.condition) return false;
+            if (f.condition()) return false;
+
+            return true;
+        },
+
+        getConditionPlaceholder(col: any) {
+            let p : any = col.field.conditionPlaceholder;
+
+            if (typeof p == 'string') return p;
+            return '';
+        },
+
+        valueChanged(field: any) {
+            field.error = null;
+            field.change();
         },
 
         updateModel() {
 
-            if (!this.cols) return;
+            if (!this.rows) return;
 
             let models: any = {}
             for(let col of this.form()) {
@@ -120,14 +235,14 @@ export default Vue.extend({
                 }
             }
 
-            for(let col of this.cols) {
-                for(let field of col.fields) {
-                    if (!models[field.name]) continue;
+            for(let row of this.rows) {
+                for(let col of row) {
+                    if (!models[col.field.name]) continue;
 
-                    const model = models[field.name];
+                    const model = models[col.field.name];
 
-                    if (model != field.model) {
-                        field.model = model;
+                    if (model != col.field.model) {
+                        col.field.model = model;
                     }
                 }
             }
@@ -162,35 +277,66 @@ export default Vue.extend({
             return obj;
         },
 
+        checkErrors() {
+
+            for(let row of this.rows!) {
+                for(let col of row) {
+
+                    const val = col.field.model[col.field.name];
+
+                    if (!col.field.error) continue;
+                    col.field.error = null;
+
+                    if (!col.field.validate) {
+                        if (col.field.required && !val) {
+                            col.field.error = translate.get('forms.errors.required');
+                        }
+
+                        else if (col.field.type == 'email' && 
+                            !Validator.for(val)
+                            .isEmail()
+                            .validate()) {
+
+                            col.field.error = translate.get('forms.errors.email');
+                        }
+
+                        continue;
+                    }
+
+                    let res = col.field.validate(val);
+                    if (res) {
+                        col.field.error = res;
+                    }
+                }
+            }
+
+            this.$forceUpdate();
+        },
+
         validate(all: boolean = false) {
 
             let someError : boolean = false;
 
-            for(let col of this.cols!) {
-                for(let field of col.fields) {
-                    const val = field.model[field.name];
+            for(let row of this.rows!) {
+                for(let col of row) {
 
-                    field.error = null;
+                    const val = col.field.model[col.field.name];
 
-                    if (field.condition) {
-                        if (!field.condition()) {
-                            continue;
-                        }
-                    }
+                    col.field.error = null;
 
-                    if (!field.validate) {
-                        if (field.required && !val) {
+                    if (!col.field.validate) {
+                        if (col.field.required && !val) {
                             someError = true;
-                            field.error = translate.get('forms.errors.required');
+                            col.field.error = translate.get('forms.errors.required');
                         }
 
-                        else if (field.type == 'email' && 
+                        else if (col.field.type == 'email' && 
                             !Validator.for(val)
                             .isEmail()
                             .validate()) {
 
                             someError = true;
-                            field.error = translate.get('forms.errors.email');
+                            col.field.error = translate.get('forms.errors.email');
                         }
 
                         if (someError && !all) {
@@ -201,9 +347,9 @@ export default Vue.extend({
                         continue;
                     }
 
-                    let res = field.validate(val);
+                    let res = col.field.validate(val);
                     if (res) {
-                        field.error = res;
+                        col.field.error = res;
                         someError = true;
                         if (!all) {
                             this.$forceUpdate();
@@ -235,15 +381,15 @@ export default Vue.extend({
 
             let data: any = {}
 
-            for(let col of this.cols!) {
+            for(let row of this.rows!) {
 
-                if (!col.fields) continue;
+                for(let col of row) {
 
-                for(let field of col.fields) {
+                    if (!col.field) continue;
 
-                    if (!field.name) continue;
+                    if (!col.field.name) continue;
 
-                    data[field.name] = field.model[field.name];
+                    data[col.field.name] = col.field.model[col.field.name];
 
                 }
             }
@@ -251,20 +397,18 @@ export default Vue.extend({
             return data;
         },
 
-        getColumnFields(col: any) {
-            const fields: any[] = []
-            if (!col)  return fields;
+        undo() {
+            for(let col of this.form()) {
+                if (!col.fields) continue;
 
-            for(let field of col.fields) {
-                if (!field.condition) {
-                    fields.push(field);
-                } else {
-                    if (field.condition()) {
-                        fields.push(field);
-                    }
+                for(let field of col.fields) {
+                    if (!field.model) continue;
+                    if (!this.previousValues[field.name]) continue;
+
+                    field.model[field.name] = this.previousValues[field.name];
                 }
             }
-            return fields
+            this.$forceUpdate();
         }
 
     },
@@ -272,7 +416,7 @@ export default Vue.extend({
     watch: {
         $props: {
             handler() {
-                if (!this.cols)
+                if (!this.rows)
                     this.initialize()
                 else
                     this.updateModel();
@@ -280,6 +424,6 @@ export default Vue.extend({
             deep: true,
             immediate: true
         }
-    }
+    },
 
 });

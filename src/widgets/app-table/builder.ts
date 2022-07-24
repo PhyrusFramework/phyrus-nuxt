@@ -13,7 +13,8 @@ type TableOptionals = {
         center?: boolean,
         paddingLeft?: number,
         sortable?: boolean,
-        click?: (item: any) => void
+        click?: (item: any) => void,
+        cellClass?: string
     }[],
     itemOptions?: (item: any) => {
         icon?:string, 
@@ -46,7 +47,8 @@ type TableOptionals = {
         emptyMessage?: string,
         rowClass?: (model: any) => any,
         draggable?: boolean,
-        rowClick?: (model: any) => any
+        rowClick?: (model: any) => any,
+        pageSizeOptions?: number[]
     }
 }
 
@@ -63,7 +65,8 @@ export type Table = {
         center?: boolean,
         paddingLeft?: number,
         sortable?: boolean,
-        click?: (item: any) => void
+        click?: (item: any) => void,
+        cellClass?: string
     }[],
     itemOptions?: (item: any) => {
         icon?:string, 
@@ -97,7 +100,8 @@ export type Table = {
         emptyMessage: string,
         rowClass: (model: any) => any,
         draggable: boolean,
-        rowClick: (model: any) => any
+        rowClick: (model: any) => any,
+        pageSizeOptions: number[]
     },
 
     filters: any,
@@ -119,6 +123,9 @@ export default class TableBuilder {
 
     static build(tableConfig: TableOptionals) : Table {
 
+        let pageSizes : number[] = tableConfig.settings && tableConfig.settings.pageSizeOptions ?
+            tableConfig.settings.pageSizeOptions : [10, 15, 30, 50];
+
         let table : Table = {
             loadData: tableConfig.loadData,
             itemOptions: tableConfig.itemOptions,
@@ -133,7 +140,7 @@ export default class TableBuilder {
                 page: tableConfig?.pagination?.page ? tableConfig.pagination?.page : 1,
                 offset: tableConfig?.pagination?.offset ? tableConfig?.pagination?.offset : 0,
                 totalPages: tableConfig?.pagination?.totalPages ? tableConfig?.pagination?.totalPages : 0,
-                perPage: tableConfig?.pagination?.perPage ? tableConfig?.pagination?.perPage : 10,
+                perPage: tableConfig?.pagination?.perPage ? tableConfig?.pagination?.perPage : pageSizes[0],
             },
             items: null,
             settings: {
@@ -147,7 +154,8 @@ export default class TableBuilder {
                         tableConfig.settings && tableConfig.settings.rowClass : () => {},
                 draggable: tableConfig.settings && tableConfig.settings.draggable ? true : false,
                 rowClick: tableConfig.settings && tableConfig.settings.rowClick ?
-                    tableConfig.settings.rowClick : () => null
+                    tableConfig.settings.rowClick : () => null,
+                pageSizeOptions: pageSizes
             },
 
             filters: {},

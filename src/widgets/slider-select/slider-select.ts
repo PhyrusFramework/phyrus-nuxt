@@ -3,7 +3,7 @@ import Vue from 'vue';
 export default Vue.extend({
   components: { },
 
-  props: ['options', 'placeholder', 'value', 'inverted', 'onChange', 'disabled', 'comparer'],
+  props: ['options', 'placeholder', 'value', 'inverted', 'onChange', 'disabled', 'comparer', 'component', 'props'],
 
   data() {
 
@@ -27,10 +27,21 @@ export default Vue.extend({
         setTimeout(() => {
             this.open = false;
         }, 50);
-    }, true); 
+    }, true);
+
+    document.body.addEventListener('keypress', ($e) => {
+      if (this.open) {
+        this.$emit('key', {key: $e.key, code: $e.keyCode, e: this});
+      }
+    });
+
   },
 
   methods: {
+
+    scrollTo(pos: number) {
+      (this.$refs.dropdown as any).scrollTop = pos;
+    },
 
     getOptions() {
       return Array.isArray(this.options) ? this.options : this.options();
@@ -69,6 +80,17 @@ export default Vue.extend({
       if (this.disabled) return;
       this.open = !this.open;
     }
-  }
+  },
+
+  watch: {
+    $props: {
+    handler() {
+        this.selected = null;
+        this.setDefault();
+    },
+    deep: true,
+    immediate: true,
+    },
+  },
 
 })

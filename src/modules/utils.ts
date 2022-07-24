@@ -1,5 +1,5 @@
 
-export default class Utils {
+export default {
 
     /**
      * Get item from array using a dot notation
@@ -9,7 +9,7 @@ export default class Utils {
      * @param string key 
      * @returns {*} value
      */
-    static dotNotation(arr: any, key: string, defaultValue?: string|null) {
+    dotNotation(arr: any, key: string, defaultValue?: string|null) {
         if(!arr || !key) {
             return defaultValue !== undefined ? defaultValue : null;
         }
@@ -27,7 +27,7 @@ export default class Utils {
         let n = parts.length - 1;
         if (!c[parts[n]]) return defaultValue !== undefined  ? defaultValue : key;
         return c[parts[n]];
-    }
+    },
 
     /**
      * Reverts an array
@@ -35,7 +35,7 @@ export default class Utils {
      * @param array arr 
      * @returns array
      */
-    static invertList(arr: Array<any>) {
+    invertList(arr: Array<any>) {
         let inv = [];
 
         for(let i = arr.length - 1; i >= 0; --i) {
@@ -43,7 +43,61 @@ export default class Utils {
         }
 
         return inv;
-    }
+    },
+
+     /**
+     * Compare two objects recursively.
+     * 
+     * @param a
+     * @param b 
+     */
+    areEqual(a: any, b: any) {
+
+        if (!a) {
+            if (!b) return true;
+            return false;
+        }
+        if (!b) {
+            if (!a) return true;
+            return false;
+        }
+
+        if (Array.isArray(a)) {
+            if (!Array.isArray(b)) return false;
+
+            if (a.length != b.length) return false;
+
+            for(let i = 0; i < a.length; ++i) {
+                const ia = a[i];
+                const ib = b[i];
+                if (!this.areEqual(ia, ib)) return false;
+            }
+            return true;
+        }
+
+        if (typeof a == 'object') {
+            if (typeof b != 'object') return false;
+
+            const ka = Object.keys(a);
+            const kb = Object.keys(b);
+    
+            if (ka.length != kb.length) return false;
+    
+            let equal = true;
+            ka.forEach((k: string) => {
+                if (!equal) return;
+
+                let ia = a[k];
+                let ib = b[k];
+                equal = this.areEqual(ia, ib);
+            });
+
+            return equal;
+        }
+
+        return a == b;
+
+    },
 
     /**
      * Generates a duplicate of an object
@@ -51,23 +105,56 @@ export default class Utils {
      * @param obj Object
      * @returns Object
      */
-    static copy(obj: any, recursive?: boolean) {
+     copy(obj: any, recursive: boolean = false, arrays: boolean = true, tree: any[] = []) {
         let s: any = {};
         if (!obj) return s;
         Object.keys(obj).forEach((key: string) => {
 
-            if (typeof s[key] == 'object') {
+            if (Array.isArray(obj[key])) {
+                if (arrays)
+                    s[key] = this.copyArray(obj[key]);
+                else
+                    s[key] = obj[key];
+            }
+            else if (typeof s[key] == 'object') {
+
                 if (recursive) {
-                    s[key] = Utils.copy(obj[key], true);
+                    s[key] = this.copy(obj[key], recursive, arrays, tree);
                 } else {
                     s[key] = obj[key];
                 }
+
             } else {
                 s[key] = obj[key];
             }
         });
         return s;
-    }
+    },
+
+    /**
+     * Copy an array
+     * 
+     * @param arr 
+     */
+    copyArray(arr: any[], tree: any[] = []) {
+        const newarr : any[] = [];
+
+        for(let item of arr) {
+
+            if (Array.isArray(item)) {
+                newarr.push(this.copyArray(item, tree));
+            }
+            else if (typeof item == 'object') {
+                newarr.push(this.copy(item, true, false, tree));
+            }
+            else {
+                newarr.push(item);
+            }
+
+        }
+
+        return newarr;
+    },
 
     /**
      * Validates email format
@@ -75,7 +162,7 @@ export default class Utils {
      * @param email 
      * @returns bool
      */
-    static validateEmail(email: string) {
+    validateEmail(email: string) {
         if (!email) return false;
         if (email == "") return false;
         if (email.length < 4) return false;
@@ -87,7 +174,7 @@ export default class Utils {
         if (c2 < c1) return false;
 
         return true;
-    }
+    },
 
     /**
      * Appends items to list
@@ -97,7 +184,7 @@ export default class Utils {
      * 
      * @returns array
      */
-    static addToList(list: any[]|null|undefined, items: any[], mapFunc?: (item: any) => any) {
+    addToList(list: any[]|null|undefined, items: any[], mapFunc?: (item: any) => any) {
         let l = list;
         if (!l) l = items;
         else {
@@ -110,7 +197,7 @@ export default class Utils {
             }
         }
         return l;
-    }
+    },
 
     /**
      * Generate a random string
@@ -118,18 +205,25 @@ export default class Utils {
      * @param int length 
      * @returns 
      */
-    static randomString(length = 10) {
-        return Math.random().toString(36).substr(2, length);
-    }
+    randomString(length = 10) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * 
+            charactersLength));
+        }
+        return result;
+    },
 
     /**
      * Generate a random number.
      * 
      * @param max 
      */
-    static rand(max: number = 100) {
+    rand(max: number = 100) {
         return Math.random() * max;
-    }
+    },
 
     /**
      * Force an object to adapt the structure of another with default values.
@@ -138,7 +232,7 @@ export default class Utils {
      * @param defaultValues 
      * @returns object
      */
-    static force(obj: any, defaultValues: any) {
+    force(obj: any, defaultValues: any) {
 
         let res : any = {};
 
@@ -148,15 +242,16 @@ export default class Utils {
 
         return res;
 
-    }
+    },
 
+   
     /**
      * Merge two objects recursively.
      * 
      * @param objA 
      * @param objB 
      */
-    static merge(objA: any, objB: any, mergeArrays = false) {
+     merge(objA: any, objB: any, mergeArrays = false) {
 
         let aux : any = {};
 
@@ -169,10 +264,10 @@ export default class Utils {
                 } else if (Array.isArray(objB[key]) && mergeArrays) {
                     let list : any[] = [];
                     for(let item of objA[key]) {
-                        aux[key].push(item);
+                        list.push(item);
                     } 
                     for(let item of objB[key]) {
-                        aux[key].push(item);
+                        list.push(item);
                     }
                     aux[key] = list;
                 } else {
@@ -185,7 +280,7 @@ export default class Utils {
                 if (objB[key] === undefined) {
                     aux[key] = objA[key];
                 } else if (typeof objB[key] == 'object') {
-                    aux[key] = Utils.merge(objA[key], objB[key]);
+                    aux[key] = this.merge(objA[key], objB[key]);
                 } else {
                     aux[key] = objB[key];
                 }
@@ -213,14 +308,14 @@ export default class Utils {
 
         return aux;
 
-    }
+    },
 
     /**
      * Detect if the bottom has been reached.
      * 
      * @param e Scroll event
      */
-    static scrollBottomReached(e: any, threshold : number = 50) {
+    scrollBottomReached(e: any, threshold : number = 50) {
 
         let top = e.target.scrollTop;
         let height = e.target.clientHeight;
@@ -235,14 +330,14 @@ export default class Utils {
 
         return false;
 
-    }
+    },
 
     /**
      * Convert a file from an input in a src for an img tag.
      * 
      * @param file
      */
-    static fileToSrc(file: any) : Promise<any> {
+    fileToSrc(file: any) : Promise<any> {
 
         return new Promise((resolve, reject) => {
 
@@ -260,7 +355,7 @@ export default class Utils {
 
         });
     
-    }
+    },
 
     /**
      * 
@@ -269,15 +364,16 @@ export default class Utils {
      * @param src Base 64
      * @returns file
      */
-    static srcToFile(src: string, name: string = 'file') {
+     srcToFile(src: string, name: string = 'file') {
         // convert base64/URLEncoded data component to raw binary data held in a string
         var byteString;
-        if (src.split(',')[0].indexOf('base64') >= 0)
-            byteString = window.atob(src.split(',')[1]);
+        const split = src.split(',');
+        if (split[0].indexOf('base64') >= 0)
+            byteString = window.atob(split[1]);
         else
-            byteString = unescape(src.split(',')[1]);
+            byteString = unescape(split[1]);
         // separate out the mime component
-        var mimeString = src.split(',')[0].split(':')[1].split(';')[0];
+        var mimeString = split[0].split(':')[1].split(';')[0];
         // write the bytes of the string to a typed array
         var ia = new Uint8Array(byteString.length);
         for (var i = 0; i < byteString.length; i++) {
@@ -299,10 +395,16 @@ export default class Utils {
             else if (['video/mp4'].includes(mimeString)) {
                 n += '.mp4';
             }
+            else if (['application/pdf'].includes(mimeString)) {
+                n += '.pdf';
+            }
+            else if (['text/plain'].includes(mimeString)) {
+                n += '.txt';
+            }
         }
 
         return new File([blob], n, {type:mimeString});
-    }
+    },
 
     /**
      * Convert the first letter to uppercase
@@ -310,9 +412,9 @@ export default class Utils {
      * @param text 
      * @returns string
      */
-    static capitalize(text: string) {
+    capitalize(text: string) {
         return text[0].toUpperCase() + text.substr(1);
-    }
+    },
 
     /**
      * Generate a URL to a random image
@@ -321,9 +423,9 @@ export default class Utils {
      * @param height 
      * @returns URL
      */
-     static randomImage(width = 250, height = 250, seed?: string) {
+     randomImage(width = 250, height = 250, seed?: string) {
         return 'https://picsum.photos/seed/' + (seed ? seed : this.randomString(4)) + '/' + width + '/' + height;
-    }
+    },
     
     /**
      * Check if filename has any of these extensions
@@ -332,7 +434,7 @@ export default class Utils {
      * @param extensions 
      * @returns boolean
      */
-    static hasExtension(filename: string, extensions: string|string[]) : boolean {
+    hasExtension(filename: string, extensions: string|string[]) : boolean {
 
         let list = Array.isArray(extensions) ? extensions : [extensions];
 
@@ -343,6 +445,75 @@ export default class Utils {
         }
 
         return false;
+    },
+
+    /**
+     * Format number as text
+     * 
+     * @param num 
+     * @returns 
+     */
+    formatNumber(num: number) {
+        if (!num) return 0;
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+    },
+
+    /**
+     * Get object of {extension: mime}
+     * 
+     * @returns 
+     */
+    getMIMETypes() : any {
+        return {
+          'txt' : 'text/plain',
+          'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'doc' : 'application/msword',
+          'pdf' : 'application/pdf',
+          'jpg' : 'image/jpeg',
+          'bmp' : 'image/bmp',
+          'png' : 'image/png',
+          'gif' : 'image/gif',
+          'xls' : 'application/vnd.ms-excel',
+          'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'rtf' : 'application/rtf',
+          'ppt' : 'application/vnd.ms-powerpoint',
+          'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'zip' : 'application/zip',
+          'mp3' : 'audio/mp3',
+          'mpeg': 'video/mpeg'
+        }
+    },
+
+    /**
+     * Get mime of extension
+     * @param extension 
+     * @returns 
+     */
+    getMimeType(extension: string) : string {
+        const types = this.getMIMETypes();
+        if (types[extension]) {
+            return types[extension];
+        }
+        return 'text/plain';
+    },
+
+    /**
+     * Detect mime of file path
+     * 
+     * @param file 
+     */
+    detectMime(file: string) : string {
+        let parts = file.split('/');
+        let last = parts[parts.length - 1];
+
+        if (!last.includes('.')) {
+            return 'application/pdf';
+        }
+
+        parts = last.split('.');
+        last = parts[parts.length - 1];
+
+        return this.getMimeType(last);
     }
 
 }

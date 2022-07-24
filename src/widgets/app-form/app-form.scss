@@ -1,18 +1,14 @@
 .app-form {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -15px;
 
     > div {
-        padding: 0 15px;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
 
         > div {
 
-            margin-bottom: 15px;
+            margin-bottom: 5px;
 
             .form-input {
-                margin-bottom: 10px;
+                margin-bottom: 5px;
             }
         }
         

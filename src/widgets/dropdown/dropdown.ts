@@ -29,14 +29,17 @@ export default Vue.extend({
 
             if (this.status == 'closed') {
                 this.status = 'expanded';
+                this.$emit('change', true);
             } else {
                 this.status = 'closed';
+                this.$emit('change', false);
             }
 
         },
 
         close() {
             this.status = 'closed';
+            this.$emit('change', false);
         }
     }
 

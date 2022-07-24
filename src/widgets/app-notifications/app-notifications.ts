@@ -45,16 +45,16 @@ export default Vue.extend({
             let icon = 'x';
             switch(type) {
                 case 'error':
-                    icon = 'x';
+                    icon = 'heroicons-solid/x';
                     break;
                 case 'success':
-                    icon = 'check';
+                    icon = 'heroicons-solid/check';
                     break;
                 case 'info':
-                    icon = 'information-circle';
+                    icon = 'heroicons-solid/information-circle';
                     break;
                 case 'warning':
-                    icon = 'exclamation';
+                    icon = 'heroicons-solid/exclamation';
                     break;
             }
 

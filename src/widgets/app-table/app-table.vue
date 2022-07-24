@@ -21,7 +21,7 @@
           <div class="table-item-card-center">
 
             <div class="table-data-col text-gray" v-for="col of table.columns" :key="col.key"
-            :class="{ordering: table.order.column == col.key, sortable: table.settings.columnsSortable && col.sortable !== false}"
+            :class="headerCellClass(col)"
             :style="{flex: colFlex(col)}" @click="orderBy(col)">
               <div>{{ col.label }}</div>
               <svg-icon :name="'heroicons-solid/chevron-' + (table.order.order == 'ASC' ? 'up' : 'down')"/>
@@ -64,6 +64,7 @@
             <template slot-scope="slot">
                <div class="table-item-card-center" :class="table.settings.rowClass(slot.item)">
                 <div class="table-data-col" v-for="(col, index) in table.columns" :key="col.key + '_' + slot.item[table.keyProp]"
+                :class="col.cellClass"
                 :style="{
                   flex: colFlex(col),
                   'overflow-x': 'auto'
@@ -87,6 +88,7 @@
             v-for="item of table.items" :key="item[table.keyProp]">
 
               <div class="table-data-col" v-for="(col, index) in table.columns" :key="col.key + '_' + item[table.keyProp]"
+              :class="col.cellClass"
               :style="{
                 flex: colFlex(col),
                 'overflow-x': 'auto'
@@ -125,7 +127,7 @@
           <div class="perPage" v-if="table.settings.perPageConfigurable">
             <div>{{ $t('table.per_page') }}</div>
             <form-input type="select" 
-            :options="paginationOptions" 
+            :options="() => getPageSizeOptions()" 
             :value="table.pagination.perPage" 
             :inverted="true"
             :onChange="(v) => { setPerPage(v) }"/>
@@ -137,7 +139,7 @@
           <svg-icon name="heroicons-solid/chevron-left" @click="setPage('-1')" />
 
           <form-input type="select" 
-          :options="paginationPagesList()" 
+          :options="() => paginationPagesList()" 
           :value="table.pagination.page" 
           :inverted="true"
           :onChange="(v) => { setPage(v) }"/>

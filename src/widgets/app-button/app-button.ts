@@ -47,9 +47,22 @@ export default Vue.extend({
 
     methods: {
 
+        isDisabled(update: boolean = false) {
+            if (update) {
+                setTimeout(() => {
+                    this.$forceUpdate();
+                }, 10);
+            }
+
+            if (this.disabled === undefined) return false;
+            if (this.disabled === false) return true;
+            if (this.disabled === true) return false;
+            return this.disabled();
+        },
+
         clickAction() {
 
-            if (this.disabled) {
+            if (this.isDisabled()) {
                 return;
             }
 

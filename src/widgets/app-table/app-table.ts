@@ -22,18 +22,9 @@ export default Vue.extend({
   data: () => {
     let data : {
       reloading: boolean,
-      paginationOptions: any[],
-
       currentScrollPosition: number
     } = {
       reloading: false,
-      paginationOptions: [
-        { value: '10'},
-        { value: '15'},
-        { value: '30'},
-        { value: '50'}
-      ],
-
       currentScrollPosition: 0
     }
 
@@ -202,6 +193,12 @@ export default Vue.extend({
       this.refreshData(true);
     },
 
+    getPageSizeOptions() {
+      return this.table.settings.pageSizeOptions.map((n: number) => {
+        return {value: n}
+      });
+    },
+
     paginationPagesList() {
 
       let pages = [];
@@ -216,6 +213,19 @@ export default Vue.extend({
       if (col.flex) return ""+col.flex;
       if (col.width) return "0 0 " + col.width + "px";
       return "1";
+    },
+
+    headerCellClass(col: any) {
+      const obj : any = {
+        ordering: this.table.order.column == col.key, 
+        sortable: this.table.settings.columnsSortable && col.sortable !== false
+      };
+
+      if (col.cellClass) {
+        obj[col.cellClass] = true;
+      }
+
+      return obj;
     },
 
     Reload() {

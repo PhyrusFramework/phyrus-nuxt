@@ -45,6 +45,18 @@ export default class Time {
 
     }
 
+    utc() {
+        return this.format('YYYY-MM-DDTHH:mm:ssZ');;
+    }
+    
+    gmt() {
+        const displace = this._moment.utcOffset();
+        const t = this.copy().add(-displace, 'minutes');
+        let str = t.format('YYYY-MM-DDTHH:mm:ss');
+        str += 'Z';
+        return str;
+    }
+
     dateObject() {
         return this._moment.toDate();
     }
@@ -109,11 +121,18 @@ export default class Time {
         return d;
     }
 
-    add(days: number) {
-        let d = this._moment.toDate();
-        d.setDate(d.getDate()+days);
+    add(amount: number, unit: 
+        'second'|'seconds'|
+        'minute'|'minutes'|
+        'hour'|'hours'|
+        'day'|'days' = 'days') {
 
-        this._moment = Moment(d);
+        let u : string = unit;
+        if (u[u.length - 1] != 's') {
+            u += 's';
+        }
+
+        this._moment.add(amount, u as any);
         return this;
     }
 
@@ -212,6 +231,69 @@ export default class Time {
 
     isPast() {
         return !this.isAfter(Time.now());
+    }
+
+    diff(t2: Time|string) : TimeInterval {
+        let t : Time = typeof(t2) == 'string' ? new Time(t2) : t2;
+        return new TimeInterval(t, this);
+    }
+}
+
+export class TimeInterval {
+
+    t1: Time;
+    t2: Time;
+
+    constructor(t1: Time, t2: Time) {
+        this.t1 = t1;
+        this.t2 = t2;
+    }
+
+    static instance(t1: Time, t2: Time) {
+        return new TimeInterval(t1, t2);
+    }
+
+    get seconds() {
+        return this.t1._moment.diff(this.t2._moment, 'seconds');
+    }
+
+    get minutes() {
+        return this.t1._moment.diff(this.t2._moment, 'minutes');
+    }
+
+    get hours() {
+        return this.t1._moment.diff(this.t2._moment, 'hours');
+    }
+
+    get days() {
+        return this.t1._moment.diff(this.t2._moment, 'days');
+    }
+
+    get months() {
+        return this.t1._moment.diff(this.t2._moment, 'months');
+    }
+
+    get years() {
+        return this.t1._moment.diff(this.t2._moment, 'years');
+    }
+
+    get all() {
+
+        const y = this.years;
+        const m = this.months - (y*12);
+        let d = this.days - (m * 30);
+        let h = this.hours - Math.floor(d * 24);
+        let min = this.minutes - Math.floor(h * 60);
+        let s = this.seconds - Math.floor(min * 60);
+
+        return {
+            years: y,
+            month: m,
+            days: d,
+            hours: h,
+            minutes: min,
+            seconds: s
+        }
     }
 
 }

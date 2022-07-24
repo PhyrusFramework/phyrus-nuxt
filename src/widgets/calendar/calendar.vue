@@ -13,8 +13,8 @@
         <div class="table">
             <div class="calendar-table-row row" v-for="(row, index) in table" :key="index">
                 <div class="cell" v-for="(day, index2) in row" :key="index2"
-                :class="{disabled: !day.enabled, active: selected == day.full, today: isToday(day.full)}"
-                @click="select(day)">
+                :class="classForCell(day)"
+                @click="select(day)" @mouseenter="setHovered(day)" @mouseleave="setHovered(null)">
                     {{day.number}}
                 </div>
             </div>

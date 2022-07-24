@@ -3,25 +3,34 @@ import Time from '../../modules/time';
 
 export default Vue.extend({
 
-    props: ['value', 'onChange', 'disabled'],
+    props: ['value', 'onChange', 'disabled', 'range'],
 
     data: function() {
 
         let data : {
             currentMonth: Time|null,
             table: any[][]|null,
-            selected: any
+            selected: any,
+            rangeTimes: (Time|null)[],
+            hovered: Time|null
         } = {
             currentMonth: null,
             table: null,
-            selected: null
+            selected: null,
+            rangeTimes: [null, null],
+            hovered: null
         };
 
         return data;
     },
 
     created() {
-        let now = this.value ? (new Time(this.value)) : Time.now();
+        let now = Time.now();
+        if (!this.range) {
+            now = this.value ? (new Time(this.value)) : Time.now();
+        } else {
+            now = this.value ? (new Time(this.value[0])) : Time.now();
+        }
         this.currentMonth = now.sub(now.dayOfMonth() - 1);
         this.refreshTable(this.disabled ? false : true);
     },
@@ -35,13 +44,15 @@ export default Vue.extend({
             return t[0].toUpperCase() + t.substr(1);
         },
 
-        select(day: {full: string, enabled: boolean}) {
-            if (this.disabled) return;
-            if (!day.enabled) return;
+        emit(value: any) {
 
             let prev = this.selected;
-            this.selected = day.full;
+            this.selected = value;
+
             this.$emit('input', this.selected);
+            this.$emit('change', this.selected);
+
+            if (!value) return;
 
             if (this.onChange) {
                 let result = this.onChange(this.selected, this);
@@ -49,7 +60,34 @@ export default Vue.extend({
                 if (result === false) {
                     this.selected = prev;
                     this.$emit('input', this.selected);
+                    this.$emit('change', this.selected);
                     return;
+                }
+            }
+        },
+
+        select(day: {full: string, enabled: any}) {
+            if (this.disabled) return;
+            if (!day.enabled(true)) return;
+
+            if (!this.range) {
+                this.emit(day.full);
+            } else {
+                if (!this.selected) {
+                    this.selected = [day.full, null];
+                    this.rangeTimes[0] = Time.instance(day.full);
+                } else {
+                    if (day.full == this.selected[0]) {
+                        this.selected = null;
+                        this.rangeTimes = [null, null];
+                    } else if (this.selected[1] == day.full) {
+                        this.selected = [this.selected[0], null];
+                        this.rangeTimes = [this.rangeTimes[0], null];
+                    } else {
+                        let val = [this.selected[0], day.full];
+                        this.rangeTimes[1] = Time.instance(day.full);
+                        this.emit(val);
+                    }
                 }
             }
         },
@@ -89,6 +127,8 @@ export default Vue.extend({
             }
     
             this.table = [];
+
+            const ref = this;
     
             for(let i = 0; i < rows; ++i) {
     
@@ -98,8 +138,14 @@ export default Vue.extend({
 
                     let item = {
                         full: first.datetime(),
+                        month: first.get('month'),
                         number: first.get('day'),
-                        enabled: thisMonth == first.get('month')
+                        enabled(forClick: boolean = false) {
+                            if (!forClick || !ref.range || !ref.selected) {
+                                return this.month == ref.currentMonth!.get('month');
+                            }
+                            return true;
+                        }
                     };
 
                     if (setInitial && item.full == this.value) {
@@ -116,14 +162,63 @@ export default Vue.extend({
         },
 
         clear() {
-            this.selected = null;
-            this.$emit('input', null);
+            this.emit(null);
         },
 
         isToday(date: string) {
             let day = Time.instance(date).date();
             let today = Time.now().date();
             return day == today;
+        },
+
+        setHovered(day: any) {
+            if (!day) {
+                this.hovered = null;
+                return;
+            }
+            this.hovered = Time.instance(day.full);
+        },
+
+        classForCell(day: any) {
+            const obj : any = {
+                disabled: !day.enabled(),
+                today: this.isToday(day.full)
+            }
+
+            if (!this.range) {
+                obj['active'] = this.selected == day.full;
+            } else {
+                obj['active'] = this.selected ? 
+                (this.selected[0] == day.full || 
+                (this.selected[1] && this.selected[1] == day.full)) : false;
+
+                if (!obj['active'] && this.selected) {
+
+                    let t = Time.instance(day.full);
+                    if (this.selected[1]) {
+
+                        if (this.rangeTimes[1]?.isAfter(this.rangeTimes[0]!)) {
+                            obj['inrange'] = t.isAfter(this.rangeTimes[0]!)
+                            && this.rangeTimes[1]!.isAfter(t);
+                        } else {
+                            obj['inrange'] = t.isAfter(this.rangeTimes[1]!)
+                            && this.rangeTimes[0]!.isAfter(t);
+                        }
+
+                    } else if (this.hovered) {
+                        if(this.hovered.isAfter(this.rangeTimes[0]!)) {
+                            obj['inrange'] = t.isAfter(this.rangeTimes[0]!)
+                            && this.hovered!.isAfter(t);
+                        } else {
+                            obj['inrange'] = t.isAfter(this.hovered!)
+                            && this.rangeTimes[0]!.isAfter(t);
+                        }
+                    }
+
+                }            
+            }
+
+            return obj;
         }
     }
 

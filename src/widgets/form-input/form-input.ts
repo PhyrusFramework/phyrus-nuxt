@@ -5,10 +5,15 @@ import intlTelInput from 'intl-tel-input';
 import countryData from 'countries-and-timezones';
 import Multiselect from '../multiselect/multiselect.vue';
 import Editor from '../editor/editor.vue';
+import IconPopup from '../icon-popup/icon-popup.vue';
+import Calendar from '../calendar/calendar.vue';
+import Time from '../../modules/time';
 
 export default Vue.extend({
 
-    components: { SliderSelect, Toggle, Multiselect, Editor },
+    name: 'form-input',
+
+    components: { SliderSelect, Toggle, Multiselect, Editor, IconPopup, Calendar },
 
     props: [ 
         'type', 
@@ -33,6 +38,11 @@ export default Vue.extend({
         'value',
         'required',
 
+        // Select
+        'component',
+        'props',
+        'onKey',
+
         // Radio
         'option',
         'labelClickable',
@@ -55,7 +65,13 @@ export default Vue.extend({
         'comparer',
 
         // Editor
-        'mode'
+        'mode',
+
+        // Time
+        'time',
+
+        // Calendar
+        'range'
     ],
 
     data: function() {
@@ -63,11 +79,13 @@ export default Vue.extend({
         let data : {
             character_count: number,
             displayContent: boolean,
-            iti: any
+            iti: any,
+            pseudoValue: any
         } = {
             character_count: 0,
             displayContent: false, // for passwords,
-            iti: null
+            iti: null,
+            pseudoValue: null
         }
         return data;
     },
@@ -75,6 +93,40 @@ export default Vue.extend({
     created() {
         if (this.length && this.value && typeof this.value == 'string') {
             this.character_count = this.value.length;
+        }
+
+        if (this.type == 'time') {
+            this.pseudoValue = {
+                hour: '00',
+                minute: '00'
+            }
+
+            if (this.time) {
+                const parts = this.time.split(':');
+                this.pseudoValue.hour = parts[0];
+                this.pseudoValue.minute = parts[1];
+            }
+        }
+
+        if (this.type == 'datetime') {
+            this.pseudoValue = {
+                date: '',
+                time: ''
+            }
+
+            if (this.time) {
+                let parts = this.time.split(' ');
+                if (parts.length < 2) {
+                    parts = this.time.split('T');
+                }
+
+                if (parts.length == 2) {
+                    this.pseudoValue.date = parts[0];
+
+                    let times = parts[1].split(':');
+                    this.pseudoValue.time = times[0] + ':' + times[1];
+                }
+            }
         }
     },
 
@@ -102,14 +154,48 @@ export default Vue.extend({
                 this.phoneChange();
             });
 
+            this.iti.telInput.addEventListener('keydown', ($e: any) => {
+                if ($e.keyCode == 9 || $e.key == 'Tab') {
+                    return;
+                }
+
+                const valid = "0123456789";
+                if (!valid.includes($e.key)) {
+                    $e.preventDefault();
+                }
+            });
+
             this.iti.telInput.addEventListener('keyup', () => {
                 this.phoneChange();
             });
+
+            if (this.value) {
+                this.iti.setNumber(this.value);
+            }
 
         }
     },
 
     methods: {
+
+        passEvent(name: string, args: any) {
+
+            const paramName = 'on' + name[0].toUpperCase() + name.substring(1);
+            const t = (this as any);
+
+            if (t[paramName]) {
+                t[paramName](args);
+            }
+
+            this.$emit(name, args);
+        },
+
+        isDisabled() {
+            if (this.readonly) return true;
+            if (!this.disabled) return false;
+            if (typeof this.disabled == 'boolean') return true;
+            return this.disabled();
+        },
 
         optionsForSelect() {
             if (this.options) return this.options;
@@ -242,8 +328,85 @@ export default Vue.extend({
                 (this.$refs.normalInput as any).focus();
             }
 
-        }
+        },
 
+        timeChanged() {
+
+            if (this.type == 'time') {
+
+                let hourNum = Number(this.pseudoValue.hour);
+                let timeNum = Number(this.pseudoValue.minute);
+
+                if (hourNum < 0) {
+                    hourNum = 0;
+                } else if (hourNum > 23) {
+                    hourNum = 23;
+                }
+    
+                if (timeNum < 0) {
+                    timeNum = 0;
+                } else if (timeNum > 59) {
+                    timeNum = 59;
+                }
+    
+                ////
+    
+                let hour = "" + hourNum;
+                let minute = "" + timeNum;
+    
+                if (hour.length < 1) hour = "0" + hour;
+                if (minute.length < 1) minute = "0" + minute;
+                if (hour.length < 2) hour = "0" + hour;
+                if (minute.length < 2) minute = "0" + minute;
+
+                this.pseudoValue = {
+                    hour: hour,
+                    minute: minute
+                }
+    
+                this.emit(hour + ":" + minute);
+    
+
+            } else { // date time
+
+                this.emit(this.pseudoValue.date + ' ' + this.pseudoValue.time);
+
+            }
+
+            
+        },
+
+        setPhoneNumber(number: string) {
+            this.iti.setNumber(number);
+        },
+
+        setPhoneCountry(countryCode: string) {
+            this.iti.setCountry(countryCode);
+        },
+
+        emitCalendarDate(val: any) {
+            if (!this.range)
+                this.emit(val);
+            else
+                this.emit([val[0], val[1]]);
+
+            setTimeout(() => {
+                let ref: any = this.$refs.iconPopup;
+                if (ref) ref.close();
+            }, 100);
+        },
+
+        calendarValueLabel() {
+            if (!this.range)
+                return this.value ? Time.instance(this.value).date() : 'YYYY-MM-DD';
+
+            if (!this.value) return '-';
+            return Time.instance(this.value[0]).date() + ' - ' + Time.instance(this.value[1]).date();
+        },
+
+        openCalendarPopup() {
+            (this.$refs.iconPopup as any).toggle();
+        }
     }
 
 })
