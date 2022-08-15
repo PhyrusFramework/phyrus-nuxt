@@ -12,4 +12,3 @@
 </template>
 
 <script lang="ts" src="./animated-list.ts"></script>
-<style lang="scss" src="./animated-list.scss"></style>

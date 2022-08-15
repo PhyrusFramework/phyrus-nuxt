@@ -1,3 +1,5 @@
+import jwt from 'jsonwebtoken';
+import Config from './config';
 
 export default class Storage {
 
@@ -33,6 +35,32 @@ export default class Storage {
 
     static clear () {
         window.localStorage.clear();
+    }
+
+    private static jwtkey() : string {
+        const conf = Config.get();
+        if (conf.auth && conf.auth.clientId) {
+            return conf.auth.clientId;
+        }
+        return Config.title;
+    }
+
+    static setEncrypted(key: string, value: any) {
+        const val = JSON.stringify(value === undefined ? null : value);
+        const tk = jwt.sign(val, this.jwtkey());
+        window.localStorage.setItem(key, tk);
+    }
+
+    static getEncrypted(key: string) : any {
+        let val = window.localStorage.getItem(key);
+        if (!val) return null;
+        try {
+            let decoded : any = jwt.verify(val!, this.jwtkey());
+            decoded = JSON.parse(decoded);
+            return decoded;
+        } catch(err) {
+            return null;
+        }
     }
 
 }

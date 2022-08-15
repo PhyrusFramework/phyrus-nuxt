@@ -6,7 +6,7 @@
             {{ dayTitle() }}
         </div>
 
-        <div class="header" v-if="mode == 'month'">
+        <div class="header" v-if="['month', 'week', undefined].includes(mode)">
             {{ monthTitle() }}
         </div>
 
@@ -15,7 +15,7 @@
             <div class="row">
                 <div class="col-auto cell"/>
 
-                <div class="col cell"
+                <div class="col cell" :class="{today: day.time.date() == today}"
                 v-for="(day, name) in getWeekDays()" :key="name">
                     <div class="day-name">{{ day.time.dayName() }}</div>
                     <div class="day-number">{{ day.time.format('DD') }}</div>
@@ -29,6 +29,7 @@
                 </div>
 
                 <event-cell class="col"
+                :class="{today: day.time.date() == today}"
                 v-for="(day, dayindex) in getWeekDays()"
                 :key="dayindex"
                 :day="day"
@@ -36,7 +37,11 @@
                 :addOnHover="addOnHover"
                 :hour="hour"
                 :hourname="hourname"
-                direction="column" />
+                direction="column"
+                :displayInterval="displayEventInterval"
+                :bulletEvents="bulletEvents"
+                :positionEvents="positionEvents"
+                :addIconBelow="true" />
 
             </div>
         
@@ -56,7 +61,10 @@
                 :addOnHover="addOnHover"
                 :hour="hour"
                 :hourname="hourname"
-                direction="row" />
+                direction="row"
+                :displayInterval="displayEventInterval"
+                :bulletEvents="bulletEvents"
+                :positionEvents="positionEvents" />
 
             </div>
 
@@ -70,13 +78,23 @@
                     {{dayname}}
                 </div>
 
-                <div class="col-7 cell month-day"
+                <event-cell class="col-7 month-day"
                 v-for="(day, index) in getMonthDays()" :key="index"
-                :class="{outer: !day.same}">
+                :class="{outer: !day.same, today: day.time.date() == today}"
+                :emptyCell="emptyCell"
+                :addOnHover="addOnHover"
+                :day="day"
+                :mode="mode"
+                :hour="{number: '12'}"
+                :displayInterval="displayEventInterval"
+                :bulletEvents="bulletEvents"
+                :positionEvents="positionEvents">
                     <span class="day-tag">{{ day.dayNumber }}</span>
 
-                    <event-box v-for="(ev, index) in day.events" :key="index" :event="ev"/>
-                </div>
+                    <event-box v-for="(ev, index) in day.events" :key="index" :event="ev" 
+                    :displayInterval="displayEventInterval" :bulletEvents="bulletEvents"
+                    :positionEvents="positionEvents"/>
+                </event-cell>
 
             </div>
 

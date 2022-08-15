@@ -514,6 +514,18 @@ export default {
         last = parts[parts.length - 1];
 
         return this.getMimeType(last);
+    },
+
+    /**
+     * Convert HTML text to plain text
+     * 
+     * @param htmlText 
+     * @returns string
+     */
+    stripTags(htmlText: string) : string {
+        let e = document.createElement('div');
+        e.innerHTML = htmlText;
+        return e.textContent ? e.textContent : '';
     }
 
 }

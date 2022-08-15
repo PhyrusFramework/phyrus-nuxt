@@ -30,7 +30,10 @@ export const locale_es = {
         select: "Seleccionar",
         contact: "Contacto",
         create: "Crear",
-        title: "Título"
+        title: "Título",
+        close: "Cerrar",
+        modify: "Modificar",
+        type: "Tipo"
     },
     time: {
         date: "Fecha",
@@ -119,5 +122,10 @@ export const locale_es = {
         add: "Agregar usuario",
         delete: "Eliminar usuario",
         edit: "Editar usuario"
+    },
+    forms: {
+        errors: {
+            required: "Campo obligatorio"
+        }
     }
 }

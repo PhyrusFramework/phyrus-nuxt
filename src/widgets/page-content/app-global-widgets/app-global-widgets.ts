@@ -3,7 +3,7 @@ import Drawer from '../../drawer/drawer.vue';
 import AppNotifications from '../../app-notifications/app-notifications.vue';
 import AppModal from '../../app-modal/app-modal.vue';
 import ZoomImage from '../../zoom-image/zoom-image.vue';
-import App from 'phyrus-nuxt/src/modules/app';
+import App from '../../../modules/app';
 
 export default Vue.extend({
   components: { Drawer, AppNotifications, AppModal, ZoomImage },

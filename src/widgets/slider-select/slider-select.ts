@@ -1,18 +1,24 @@
 import Vue from 'vue';
+import SearchBar from '../searchbar/searchbar';
 
 export default Vue.extend({
-  components: { },
 
-  props: ['options', 'placeholder', 'value', 'inverted', 'onChange', 'disabled', 'comparer', 'component', 'props'],
+  components: { SearchBar },
+
+  props: ['options', 'placeholder', 'value', 'inverted', 'onChange', 'disabled', 'comparer', 'component', 'props', 'beforeChange'],
 
   data() {
 
     let data : {
       open: boolean,
-      selected: any
+      selected: any,
+      search: string,
+      mouseOnSearch: boolean
     } = {
       open: false,
-      selected: null
+      selected: null,
+      search: '',
+      mouseOnSearch: false
     }
 
     return data
@@ -23,6 +29,7 @@ export default Vue.extend({
 
     document.body.addEventListener('click', () => {
         if (!this.open) return;
+        if (this.mouseOnSearch) return;
 
         setTimeout(() => {
             this.open = false;
@@ -48,15 +55,33 @@ export default Vue.extend({
     },
 
     select(option: any) {
-      this.selected = (option.value === null) ? null : option;
-      this.$emit('input', option.value);
-      this.open = false;
 
-      this.$emit('change', option.value);
-
-      if (this.onChange) {
-        this.onChange(option.value);
+      const end = () => {
+        this.selected = (option.value === null) ? null : option;
+        this.open = false;
+  
+        this.$emit('input', option.value);
+        this.$emit('change', option.value);
+  
+        if (this.onChange) {
+          this.onChange(option.value);
+        }
+  
+        this.$forceUpdate();
       }
+
+      if (!this.beforeChange) end();
+      else {
+        this.beforeChange(option.value)
+        .then(end)
+        .catch(() => {});
+      }
+
+      if (this.search != '') {
+        this.search = '';
+        this.$emit('search', this.search);
+      }
+
     },
 
     setDefault() {

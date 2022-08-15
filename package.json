@@ -1,6 +1,6 @@
 {
   "name": "phyrus-nuxt",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Nuxt Phyrus library.",
   "main": "index.ts",
   "types": "index.d.ts",
@@ -13,10 +13,12 @@
   "dependencies": {
     "@types/countries-and-timezones": "^2.0.3",
     "@types/intl-tel-input": "^17.0.4",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/vue2-editor": "^2.6.1",
     "axios": "^0.21.1",
     "countries-and-timezones": "^2.4.0",
     "intl-tel-input": "^17.0.13",
+    "jsonwebtoken": "^8.5.1",
     "moment-timezone": "^0.5.33",
     "vue-advanced-cropper": "^1.8.2",
     "vue2-editor": "^2.10.3",

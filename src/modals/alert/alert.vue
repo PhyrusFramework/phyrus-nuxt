@@ -1,12 +1,12 @@
 <template>
     <div class="modal-alert">
         <div class="closer" v-if="!cancelable">
-            <svg-icon name="heroicons-outline/x" @click="close()"/>
+            <svg-icon name="heroicons-solid/x" @click="close()"/>
         </div>
 
         <div class="flex-grow flex-center flex-col">
-            <svg-icon class="alert-icon" v-if="icon" :name="icon"/>
-            <p>{{text}}</p>
+            <svg-icon class="heroicons-solid/alert-icon" v-if="icon" :name="icon"/>
+            <p v-html="text"/>
 
             <div class="buttons" v-if="buttonLeft || buttonRight">
                 <div class="button-left" v-if="buttonLeft" @click="clickButton(buttonLeft)">
@@ -20,5 +20,5 @@
     </div>
 </template>
 
-<script lang="ts" src="./alert.controller.ts"></script>
+<script lang="ts" src="./alert.ts"></script>
 <style lang="scss" src="./alert.scss"></style>

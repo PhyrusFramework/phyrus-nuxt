@@ -30,9 +30,10 @@
           </div>
         </div>
 
-        <div class="table-item-options">
+        <div class="table-item-options"
+        v-if="!table.selectedOptions && table.itemOptions">
           <div class="table-item-card-right">
-            <div v-if="!table.selectedOptions && table.itemOptions" style="width: 40px"></div>
+            <div style="width: 40px"></div>
             <dots-menu 
             v-if="table.selectedOptions" 
             :options="table.selectedOptions()"></dots-menu>
@@ -109,11 +110,10 @@
 
         </div>
 
-        <div class="table-item-options">
+        <div class="table-item-options" v-if="table.itemOptions && table.itemOptions(item).length > 0">
           <div class="table-item-card-right" :class="table.settings.rowClass(item)"
           v-for="item of table.items" :key="item[table.keyProp]">
             <dots-menu 
-            v-if="table.itemOptions && table.itemOptions(item).length > 0"
             :options="table.itemOptions(item)" :model="item"></dots-menu>
           </div>
         </div>

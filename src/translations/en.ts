@@ -30,7 +30,10 @@ export const locale_en = {
         select: "Select",
         contact: "Contact",
         create: "Create",
-        title: "Title"
+        title: "Title",
+        close: "Close",
+        modify: "Modify",
+        type: "Type"
     },
     time: {
         date: "Date",
@@ -120,5 +123,10 @@ export const locale_en = {
         add: "Add user",
         delete: "Delete user",
         edit: "Edit user"
+    },
+    forms: {
+        errors: {
+            required: "Field required"
+        }
     }
 }

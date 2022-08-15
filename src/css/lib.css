@@ -21,6 +21,14 @@ textarea {
   font-family: inherit !important;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
 .bgimage {
   background-size: cover;
   background-position: center;

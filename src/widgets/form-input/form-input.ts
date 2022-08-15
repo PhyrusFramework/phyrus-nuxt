@@ -42,6 +42,7 @@ export default Vue.extend({
         'component',
         'props',
         'onKey',
+        'beforeChange',
 
         // Radio
         'option',
@@ -80,12 +81,14 @@ export default Vue.extend({
             character_count: number,
             displayContent: boolean,
             iti: any,
-            pseudoValue: any
+            pseudoValue: any,
+            reloading: boolean
         } = {
             character_count: 0,
             displayContent: false, // for passwords,
             iti: null,
-            pseudoValue: null
+            pseudoValue: null,
+            reloading: false
         }
         return data;
     },
@@ -284,8 +287,19 @@ export default Vue.extend({
                 this.$forceUpdate();
         },
 
-        clear() {
-            this.emit('');
+        reload() {
+            this.reloading = true;
+            setTimeout(() => {
+                this.reloading = false;
+            }, 5);
+        },
+
+        clear(value: any = '') {
+            this.emit(value);
+
+            if (['select'].includes(this.type)) {
+                this.reload();
+            }
         },
 
         onSubmit() {
@@ -386,9 +400,9 @@ export default Vue.extend({
 
         emitCalendarDate(val: any) {
             if (!this.range)
-                this.emit(val);
+                this.emit(Time.instance(val));
             else
-                this.emit([val[0], val[1]]);
+                this.emit([Time.instance(val[0]), Time.instance(val[1])]);
 
             setTimeout(() => {
                 let ref: any = this.$refs.iconPopup;
@@ -398,15 +412,12 @@ export default Vue.extend({
 
         calendarValueLabel() {
             if (!this.range)
-                return this.value ? Time.instance(this.value).date() : 'YYYY-MM-DD';
+                return this.value ? this.value.date() : 'YYYY-MM-DD';
 
             if (!this.value) return '-';
-            return Time.instance(this.value[0]).date() + ' - ' + Time.instance(this.value[1]).date();
-        },
-
-        openCalendarPopup() {
-            (this.$refs.iconPopup as any).toggle();
+            return this.value[0].date() + ' - ' + this.value[1].date();
         }
+
     }
 
 })

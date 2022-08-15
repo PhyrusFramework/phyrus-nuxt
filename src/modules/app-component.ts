@@ -5,16 +5,18 @@ import Time from './time';
 import Storage from './storage';
 import Config from './config';
 import App from './app';
+import store from './store';
 
 let AppComponent = Vue.extend({
 
     data() {
         return {
-            lib: {
+            phyrus: {
                 utils: Utils,
                 time: Time,
                 storage: Storage,
-                config: Config.get()
+                config: Config.get(),
+                store: store
             }
         }
     },
@@ -37,7 +39,7 @@ let AppComponent = Vue.extend({
         },
 
         ref(name: string) : any {
-            return this.$refs[name] as any;
+            return (this.$refs as any)[name];
         },
 
         closeModal() {
@@ -46,6 +48,10 @@ let AppComponent = Vue.extend({
 
         copyToClipboard(content: string) {
             navigator.clipboard.writeText(content);
+        },
+
+        middlewareCompleted() {
+            return store.middlewareStatus;
         }
     }
 

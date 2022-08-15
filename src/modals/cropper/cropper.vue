@@ -1,6 +1,6 @@
 <template>
     <div class="crop-image-modal">
-        <cropper @change="cropperChange($event)" v-if="src" :src="src"/>
+        <cropper @change="cropperChange($event)" v-if="src" :src="src" :stencil-props="stencilProp" />
         <div class="flex-row flex-center controls">
             <app-button class="cancel-button" @click="cancel()">{{ $t('generic.cancel') }}</app-button>
             <app-button class="crop-button" @click="crop()">{{ $t('media.crop') }}</app-button>
@@ -19,18 +19,23 @@ import translate from '../../modules/translator';
 import App from '../../modules/app';
 
 export default Vue.extend({
-    props: ['src', 'onSave'],
+    props: ['src', 'onSave', 'ratio'],
     components: {Cropper, AppButton},
 
     data() {
-        let data : {
-            cropped: string
-        } = {
-            cropped: ''
+        let data = {
+            cropped: '',
+            stencilProp: {
+                aspectRatio: '1'
+            }
         }
         return data;
     },
 
+    mounted() {
+        if (this.ratio)
+        this.stencilProp.aspectRatio = this.ratio
+    },
     methods: {
         $t(key: string) {
             return translate.get(key);

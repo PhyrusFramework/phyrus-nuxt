@@ -53,6 +53,10 @@
         max-height: 250px;
         overflow-y: auto;
 
+        .searchbar {
+            margin-bottom: 10px;
+        }
+
         .slider-select-option {
             cursor: pointer;
             user-select: none;

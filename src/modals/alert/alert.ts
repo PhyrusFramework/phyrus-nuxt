@@ -3,16 +3,14 @@ import App from '../../modules/app';
 
 export default Vue.extend({
 
-    props: ['text', 'icon', 'cancelable', 'buttonLeft', 'buttonRight'],
-
-    data: function() {
-
-        return {
-        };
-    },
+    props: ['text', 'icon', 'cancelable', 'buttonLeft', 'buttonRight', 'onPressX'],
 
     methods: {
         close() {
+            if (this.onPressX) {
+                this.onPressX();
+            }
+
             App.modal.close();
         },
         clickButton(btn: any) {

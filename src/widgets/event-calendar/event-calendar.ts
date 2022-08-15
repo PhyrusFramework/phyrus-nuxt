@@ -7,21 +7,32 @@ import EventBox from './event-box/event-box.vue';
 
 export default Vue.extend({
 
-    props: ['mode', 'events', 'starthour', 'endhour', 'addOnHover', 'emptyCell'],
+    props: ['mode', 
+    'events', 
+    'starthour', 
+    'endhour', 
+    'addOnHover', 
+    'emptyCell', 
+    'value', 
+    'displayEventInterval', 
+    'bulletEvents', 
+    'positionEvents' ],
 
     components: { EventCell, EventBox },
 
     data() {
         const data : {
-            currentDay: Time,
             _monthDays: any,
             _weekDays: any,
-            _day: any
+            _day: any,
+            today: string,
+            pseudoValue: Time
         } = {
-            currentDay: new Time(),
             _monthDays: null,
             _weekDays: null,
-            _day: null
+            _day: null,
+            today: Time.instance().date(),
+            pseudoValue: new Time()
         }
 
         return data;
@@ -29,19 +40,54 @@ export default Vue.extend({
 
     methods: {
 
+        getValue() {
+            return this.value ? this.value : this.pseudoValue;
+        },
+
+        toDate(date: Time) {
+            this.$emit('input', date);
+            this._monthDays = null;
+            this._weekDays = null;
+            this._day = null;
+            this.$forceUpdate();
+        },
+
+        parseEvents() {
+            return this.events.map((item: any) => {
+
+                const it : any = Utils.force(item, {
+                    text: '',
+                    date: '',
+                    end: null,
+                    color: 'green',
+                    meet: null,
+                    link: null,
+                    onClick: null,
+                    popup: null,
+                    popupVisible: 0
+                });
+
+                it.date = new Time(it.date);
+                it.end = it.end ? new Time(it.end) : null;
+
+                return it;
+            });
+        },
+
         getMonthDays() {
             if (this._monthDays) return this._monthDays;
 
-            const first = this.currentDay.getFirstOfMonth().getMonday();
-            const last = this.currentDay.getLastOfMonth().getSunday().add(1);
+            const first = this.getValue().getFirstOfMonth().getMonday();
+            const last = this.getValue().getLastOfMonth().getSunday().add(1);
 
             const list: any = {}
 
-            const thisMonth = this.currentDay.format('MM');
+            const thisMonth = this.getValue().format('MM');
 
             while(last.isAfter(first)) {
 
                 const item : any = {
+                    time: first.copy(),
                     same: first.format('MM') == thisMonth,
                     dayNumber: first.format('DD'),
                     events: []
@@ -52,23 +98,7 @@ export default Vue.extend({
 
             }
 
-            const evs = this.events.map((item: any) => {
-
-                const it : any = Utils.force(item, {
-                    text: '',
-                    date: '',
-                    color: 'green',
-                    meet: null,
-                    link: null,
-                    onClick: null,
-                    popup: null,
-                    popupVisible: 0
-                });
-
-                it.date = new Time(it.date);
-
-                return it;
-            });
+            const evs = this.parseEvents();
 
             for(let ev of evs) {
 
@@ -80,6 +110,21 @@ export default Vue.extend({
                 list[id].events.push(ev)
             }
 
+            Object.keys(list)
+            .forEach(id => {
+
+                let evs : any[] = list[id].events;
+                if (!evs) return;
+
+                evs.sort((a: any, b: any) => {
+                    if (a.date.datetime() < b.date.datetime()) {
+                        return -1;
+                    }
+                    return 1;
+                });
+
+            });
+
             this._monthDays = list;
             return list;
         },
@@ -87,7 +132,7 @@ export default Vue.extend({
         getWeekDays() {
             if (this._weekDays) return this._weekDays;
 
-            const first = this.currentDay.getMonday();
+            const first = this.getValue().getMonday();
             const list : any = {};
 
             for(let i = 0; i < 7; ++i) {
@@ -120,23 +165,7 @@ export default Vue.extend({
                 return list;
             }
 
-            const evs = this.events.map((item: any) => {
-
-                const it : any = Utils.force(item, {
-                    text: '',
-                    date: '',
-                    color: 'green',
-                    meet: null,
-                    link: null,
-                    onClick: null,
-                    popup: null,
-                    popupVisible: 0
-                });
-
-                it.date = new Time(it.date);
-
-                return it;
-            });
+            const evs = this.parseEvents();
 
             for(let ev of evs) {
 
@@ -185,7 +214,7 @@ export default Vue.extend({
         getDay(monthDay : string | null = null) {
             if (this._day) return this._day;
 
-            const md = this.currentDay.format('MM/DD');
+            const md = this.getValue().format('MM/DD');
 
             const list = this.getWeekDays();
             if (!list[md]) return null;
@@ -195,15 +224,15 @@ export default Vue.extend({
         },
 
         dayTitle() {
-            return Utils.capitalize(this.currentDay.format('dddd, DD')) + ' ' + Utils.capitalize(this.currentDay.format('MMMM'));
+            return Utils.capitalize(this.getValue().format('dddd, DD')) + ' ' + Utils.capitalize(this.getValue().format('MMMM'));
         },
 
         monthTitle() {
-            return Utils.capitalize(this.currentDay.format('MMMM'));
+            return Utils.capitalize(this.getValue().format('MMMM'));
         },
 
         daynames() {
-            const monday = this.currentDay.getMonday();
+            const monday = this.getValue().getMonday();
             const daynames : string[] = [];
 
             for(let i = 0; i < 7; ++i) {
@@ -243,26 +272,26 @@ export default Vue.extend({
 
         next() {
             if (this.mode == 'day') {
-                this.currentDay.add(1);
+                this.getValue().add(1);
             } else if (this.mode == 'month') {
-                this.currentDay.add(
-                    this.currentDay.daysThisMonth - Number(this.currentDay.get('day')) + 1
+                this.getValue().add(
+                    this.getValue().daysThisMonth - Number(this.getValue().get('day')) + 1
                 );
             } else { // week
-                this.currentDay.add(7);
+                this.getValue().add(7);
             }
             this.reset();
         },
 
         previous() {
             if (this.mode == 'day') {
-                this.currentDay.add(-1);
+                this.getValue().add(-1);
             }  else if (this.mode == 'month') {
-                this.currentDay.add(
-                    -Number(this.currentDay.daysThisMonth)
+                this.getValue().add(
+                    - this.getValue().get('day')
                 );
             } else { // week
-                this.currentDay.add(-7);
+                this.getValue().add(-7);
             }
             this.reset();
         }

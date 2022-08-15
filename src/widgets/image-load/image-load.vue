@@ -11,12 +11,14 @@
 
         <img :src="src" 
         v-show="loaded" 
-        v-if="!error"
+        v-if="!error && !background"
         @load="loaded = true" 
         @error="imgError()"
         :style="{position: loaded ? 'relative' : 'absolute'}">
 
-        <img v-if="error && placeholder" :src="placeholder" >
+        <img v-if="error && !background && placeholder" :src="placeholder" class="placeholder">
+
+        <div ref="backgroundElem" v-if="background" class="bgImage" />
     </div>
 </template>
 

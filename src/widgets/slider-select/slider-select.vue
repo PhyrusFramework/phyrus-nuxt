@@ -10,6 +10,11 @@
     </div>
 
     <div class="slider-select-dropdown" v-if="options" ref="dropdown">
+
+        <div v-if="$listeners.search" @mouseenter="mouseOnSearch = true" @mouseleave="mouseOnSearch = false">
+            <search-bar v-model="search" @stop="$emit('search', search)" />
+        </div>
+
         <div class="slider-select-option" v-for="(option, index) in getOptions()" :key="index" 
         @click="select(option)">
             <div v-if="!component" v-html="option.content ? option.content : option.value"/>

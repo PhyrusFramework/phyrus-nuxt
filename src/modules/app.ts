@@ -131,7 +131,8 @@ export default class App {
             props?: any, 
             cancelable?: boolean,
             width?: string,
-            class?: string
+            class?: string,
+            noPadding?: boolean
         }) {
             if (!this._ref) {
                 return;
@@ -174,33 +175,43 @@ export default class App {
         cancelable?: boolean,
         icon?: string,
         buttonLeft?: {text: string, onClick: () => void},
-        buttonRight?: {text: string, onClick: () => void}
+        buttonRight?: {text: string, onClick: () => void},
+        onClose?: () => void,
+        onPressX?: () => void
     }) {
         App.modal!.open({
             component: Alert,
             cancelable: props.cancelable,
-            props: props
+            props: {
+                ...props,
+                onPressX: props.onPressX
+            },
+            onClose: props.onClose
         });
     }
 
-    static confirmation(text: string, icon: string = 'exclamation') : Promise<any> {
+    static confirmation(text: string, options?: {
+        icon?: string,
+        yes?: string,
+        no?: string
+    }) : Promise<any> {
 
         return new Promise((resolve, reject) => {
 
             App.displayAlert({
                 text: text,
                 cancelable: false,
-                icon: icon,
+                icon: options && options.icon ? options.icon : 'exclamation',
                 buttonLeft: {
-                    text: translate.get('generic.yes'),
+                    text: options && options.no ? options.no : translate.get('generic.no'),
                     onClick: () => {
-                        resolve(true);
+                        reject();
                     }
                 },
                 buttonRight: {
-                    text: translate.get('generic.no'),
+                    text: options && options.yes ? options.yes : translate.get('generic.yes'),
                     onClick: () => {
-                        reject();
+                        resolve(true);
                     }
                 }
             });
@@ -209,20 +220,27 @@ export default class App {
 
     }
 
-    static cropImage(url: string) : Promise<string> {
+    static cropImage(url: string, ratio: number = 0) : Promise<string> {
         
         return new Promise((resolve, reject) => {
+
+            let props: any = {
+                src: url,
+                onSave: (src: string) => {
+                    resolve(src);
+                }
+            }
+
+            if (ratio > 0) {
+                props['ratio'] = ratio;
+            }
 
             this.modal.open({
                 component: Cropper,
                 class: 'cropper-modal',
-                props: {
-                    src: url,
-                    onSave: (src: string) => {
-                        resolve(src);
-                    }
-                }
+                props: props
             });
+
 
         });
 
@@ -238,8 +256,10 @@ export default class App {
         emptyMessage?: string,
         multiple?: boolean,
         comparer?: (a: any, b: any) => boolean,
-        initial?: any|any[]
-    }) {
+        initial?: any|any[],
+        searchbar?: boolean,
+        confirmation?: (result: any) => Promise<any>
+    }) : Promise<any> {
 
         return new Promise((resolve, reject) => {
 
@@ -247,8 +267,9 @@ export default class App {
                 item: props.item,
                 search: props.search,
                 onSave: (selected: any) => {
-                    resolve(selected);
-                }
+                    return resolve(selected);
+                },
+                confirmation: props.confirmation
             };
 
             if (props.emptyMessage) 
@@ -262,6 +283,10 @@ export default class App {
 
             if (props.comparer)
             attrs['comparer'] = props.comparer;
+
+            if (props.searchbar) {
+                attrs['searchbar'] = true;
+            }
 
             this.modal.open({
                 component: ModelSelect,

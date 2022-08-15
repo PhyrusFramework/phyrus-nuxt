@@ -17,6 +17,14 @@
             flex: 1;
         }
 
+        &.today {
+            background-color: rgb(254, 246, 235);
+
+            &.month-day {
+                border: solid 3px rgb(200, 171, 133);
+            }
+        }
+
         .day-name {
             font-size: 12px;
         }

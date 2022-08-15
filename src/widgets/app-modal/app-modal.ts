@@ -7,7 +7,8 @@ type ModalType = {
     status: 'opening'|'open',
     width?: string,
     class?: string,
-    noPadding?: boolean
+    noPadding?: boolean,
+    onClose?: () => void
 }
 
 type ModalOptions = {
@@ -16,7 +17,8 @@ type ModalOptions = {
     cancelable?: boolean,
     width?: string,
     class?: string,
-    noPadding?: boolean
+    noPadding?: boolean,
+    onClose?: () => void
 }
 
 export type AppModalInterface = {
@@ -78,7 +80,8 @@ export default Vue.extend({
                 width: options.width,
                 status: 'opening',
                 class: options.class,
-                noPadding: options.noPadding ? true : false
+                noPadding: options.noPadding ? true : false,
+                onClose: options.onClose
             };
 
             this.modals.push(modal);
@@ -103,6 +106,9 @@ export default Vue.extend({
                 this.closing = true;
                 setTimeout(() => {
                     this.modals.splice(this.modals.length - 1, 1);
+                    if (last.onClose) {
+                        last.onClose();
+                    }
                     resolve(true);
                     this.closing = false;
                 }, 300);

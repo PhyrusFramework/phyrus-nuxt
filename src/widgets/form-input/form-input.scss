@@ -143,9 +143,8 @@
 
         > .flex-row {
             background-color: white;
-            padding: 8px;
-            border-radius: var(--rounded);
-            border: solid 1px lightgray;
+            padding: 2px 8px;
+            border-radius: 2px;
 
             > .calendar-selected-label {
                 flex: 1;

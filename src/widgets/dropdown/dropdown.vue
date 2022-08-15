@@ -1,11 +1,11 @@
 <template>
     <div class="dropdown" :class="{expanded: status == 'expanded'}">
         <div class="dropdown-label" @click="toggle()" v-if="label">
-            <svg-icon name="chevron-right"/>
+            <svg-icon name="heroicons-solid/chevron-right"/>
             <div v-html="label"/>
         </div>
         <div class="dropdown-label" @click="toggle()" v-if="$slots.label">
-            <svg-icon name="chevron-right"/>
+            <svg-icon name="heroicons-solid/chevron-right"/>
             <slot name="label"/>
         </div>
 

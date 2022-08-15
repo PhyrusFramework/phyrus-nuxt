@@ -287,6 +287,10 @@ export default Vue.extend({
                     if (!col.field.error) continue;
                     col.field.error = null;
 
+                    if (!col.field.condition()) {
+                        continue;
+                    }
+
                     if (!col.field.validate) {
                         if (col.field.required && !val) {
                             col.field.error = translate.get('forms.errors.required');
@@ -324,7 +328,12 @@ export default Vue.extend({
 
                     col.field.error = null;
 
+                    if (!col.field.condition()) {
+                        continue;
+                    }
+
                     if (!col.field.validate) {
+
                         if (col.field.required && !val) {
                             someError = true;
                             col.field.error = translate.get('forms.errors.required');

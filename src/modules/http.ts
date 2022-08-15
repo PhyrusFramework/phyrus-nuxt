@@ -11,13 +11,15 @@ export type Request = {
     external?: boolean,
     promise?: {resolve: any, reject: any}|null,
     isRefresh?: boolean,
-    fullResponse?: boolean
+    fullResponse?: boolean,
+    responseType?: 'json'|'blob'|'text'
 }
 
 export type HTTPError = {
     code: number,
     data: any,
-    url: string
+    url: string,
+    headers: any
 }
 
 const arrayToFormData = (name: string, arr: any[]) => {
@@ -169,15 +171,19 @@ const generateHTTP = () : HTTPClient => {
                 if (['GET', 'DELETE'].includes(request.method)) {
                     let char = '?';
                     Object.keys(data).forEach(k => {
-                        urlparams += char + k + '=' + data[k];
+                        urlparams += char + k + '=' + encodeURIComponent(data[k]);
                         char = '&';
                     });
                 }
     
                 // Headers
                 let headers : any = {
-                    'Authorization': this.getToken(),
                     'Content-Type': 'application/json'
+                }
+
+                const tk = this.getToken();
+                if (tk) {
+                    headers['Authorization'] = tk;
                 }
     
                 Object.keys(this.globalHeaders)
@@ -206,12 +212,16 @@ const generateHTTP = () : HTTPClient => {
                     });
                     dta = form;
                 }
+                else if (headers['Content-Type'] == 'application/x-www-form-urlencoded') {
+                    dta = new URLSearchParams(request.data);
+                }
     
                 axios({
                     method: request.method,
                     url: this.baseURL + request.url + urlparams,
                     data: dta,
-                    headers: headers
+                    headers: headers,
+                    responseType: request.responseType ? request.responseType : 'json'
                 }).then( (response:any) => {
                     if (!request.fullResponse)
                         resolve(response.data);
@@ -222,7 +232,8 @@ const generateHTTP = () : HTTPClient => {
                     let err : HTTPError = {
                         url: error.config.url,
                         code: error.response ? error.response.status : 0,
-                        data: error.response ? error.response.data : {}
+                        data: error.response ? error.response.data : {},
+                        headers: error.response ? error.response.headers : {}
                     }
 
                     if (request.isRefresh) {

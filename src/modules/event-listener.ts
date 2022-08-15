@@ -11,7 +11,15 @@ export default class EventListener {
             this.events[event] = {}
         }
 
-        this.events[event][action] = callback;
+        let ac = action;
+        if (ac == '*') {
+            ac = "" + Math.random() * 1000;
+            while(this.events[event][ac]) {
+                ac = "" + Math.random() * 1000;
+            }
+        }
+
+        this.events[event][ac] = callback;
 
         if (this.waiters[event]) {
             for(let waiter of this.waiters[event]) {
@@ -23,7 +31,7 @@ export default class EventListener {
 
     }
 
-    static trigger(event: string, param?: any) {
+    static trigger(event: string, param?: any) : Promise<any[]> {
 
         return new Promise((resolve, reject) => {
 
@@ -47,7 +55,7 @@ export default class EventListener {
 
     }
 
-    private static _trigger(event: string, keys: string[], param: any, returns: any[] = []) {
+    private static _trigger(event: string, keys: string[], param: any, returns: any[] = []) : Promise<any[]> {
         
         return new Promise((resolve, reject) => {
 
@@ -102,6 +110,11 @@ export default class EventListener {
         if (!this.events[event][action]) return;
         this.events[event][action] = null;
         delete this.events[event][action];
+    }
+
+    static existsEvent(event: string) {
+        if (!this.events[event]) return false;
+        return true;
     }
 
 }

@@ -8,17 +8,7 @@ export default class Config {
     static defaultLanguage: string;
     static defaultLayout: string = 'default';
     static defaultMiddleware: string = 'default';
-    static settings: any = {
-        freeRegistration: false
-    }
-
-    static auth0: any = {
-        domain: null,
-        clientId: null,
-        logoutRedirectUri: null
-    };
     static theme: any = {};
-
     static _original: any = {}
 
     // CONSTRUCTOR
@@ -33,8 +23,6 @@ export default class Config {
         else this.defaultLanguage = navigator.language.substr(0, 2);
         if (config.defaultLayout) this.defaultLayout = config.defaultLayout;
         if (config.defaultMiddleware) this.defaultMiddleware = config.defaultMiddleware;
-        if (config.settings) this.settings = config.settings;
-        if (config.auth0) this.auth0 = config.auth0;
         if (config.theme) {
             this.theme = config.theme;
             this.defineCSSvariables();

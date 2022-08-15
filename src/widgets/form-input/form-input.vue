@@ -84,11 +84,11 @@
             @keyup.enter="onSubmit()"
             ref="passwordInput">
 
-            <svg-icon :name="displayContent ? 'eye-off' : 'eye'" @click="changePasswordVisibility()"/>
+            <svg-icon :name="displayContent ? 'heroicons-solid/eye-off' : 'heroicons-solid/eye'" @click="changePasswordVisibility()"/>
         </div>
 
         <slider-select
-        v-if="['select', 'country'].includes(type) && !multiple" 
+        v-if="!reloading && ['select', 'country'].includes(type) && !multiple" 
         :value="value"
         :placeholder="placeholder" 
         :options="optionsForSelect()"
@@ -98,9 +98,10 @@
         :comparer="comparer"
         :component="component"
         :props="props"
+        :beforeChange="beforeChange"
         @key="passEvent('key', $event)"/>
 
-        <multiselect v-if="type == 'select' && multiple" 
+        <multiselect v-if="!reloading && type == 'select' && multiple" 
         :value="value" :placeholder="placeholder"
         :options="options" :multiple="true" :separator="separator"
         :disabled="isDisabled()"
@@ -111,7 +112,7 @@
 
         <div class="form-input-calendar" v-if="type == 'calendar'">
             <div class="flex-row">
-                <div class="calendar-selected-label" @click="openCalendarPopup()">{{ calendarValueLabel() }}</div>
+                <div class="calendar-selected-label">{{ calendarValueLabel() }}</div>
                 <icon-popup icon="entypo/calendar" ref="iconPopup">
                     <calendar v-model="pseudoValue" @change="emitCalendarDate(pseudoValue)"
                     :range="range"/>
