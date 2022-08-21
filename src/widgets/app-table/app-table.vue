@@ -75,7 +75,7 @@
                     'text-align': col.center ? 'center' : 'left',
                     'padding-left': (col.paddingLeft ? col.paddingLeft : 0) + 'px'
                   }">
-                    <div v-if="!col.component" v-html="col.value(slot.item, index)" @click="col.click? col.click(item) : ''"/>
+                    <div v-if="!col.component" v-html="col.value(slot.item, index)" @click="col.click? col.click(slot.item) : ''"/>
                     <component v-if="col.component" :is="col.component" v-bind="col.props ? col.props(slot.item) : {}"/>
                   </div>
                 </div>
@@ -110,7 +110,7 @@
 
         </div>
 
-        <div class="table-item-options" v-if="table.itemOptions && table.itemOptions(item).length > 0">
+        <div class="table-item-options" v-if="table.itemOptions">
           <div class="table-item-card-right" :class="table.settings.rowClass(item)"
           v-for="item of table.items" :key="item[table.keyProp]">
             <dots-menu 

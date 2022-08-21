@@ -1,16 +1,17 @@
-import { HTTPError, Request, http, ajax} from "./src/modules/http"
-import translate from "./src/modules/translator"
-import Utils from "./src/modules/utils"
+import { http, ajax} from "./src/modules/http";
+import type { HTTPError, Request} from "./src/modules/http";
+import translate from "./src/modules/translator";
+import Utils from "./src/modules/utils";
 import Config from "./src/modules/config";
 import App from './src/modules/app';
 import Storage from './src/modules/storage';
 import Time from './src/modules/time';
 import EventListener from "./src/modules/event-listener";
-import AppComponent from "./src/modules/app-component"
-import AppPage from "./src/modules/app-page"
-import DotsMenu from './src/widgets/dots-menu/dots-menu.vue'
-import AppTable from './src/widgets/app-table/app-table.vue'
-import TableBuilder, { Table } from "./src/widgets/app-table/builder";
+import AppComponent from "./src/modules/app-component";
+import DotsMenu from './src/widgets/dots-menu/dots-menu.vue';
+import AppTable from './src/widgets/app-table/app-table.vue';
+import TableBuilder from "./src/widgets/app-table/builder";
+import type { Table } from "./src/widgets/app-table/builder";
 import CircleImage from './src/widgets/circle-image/circle-image.vue';
 import SearchBar from './src/widgets/searchbar/searchbar.vue';
 import SliderSelect from './src/widgets/slider-select/slider-select.vue';
@@ -50,10 +51,10 @@ import EventCalendar from "./src/widgets/event-calendar/event-calendar.vue";
 import Checkbox from "./src/widgets/checkbox/checkbox.vue";
 import Validator from "./src/modules/validator";
 import PageContent from "./src/widgets/page-content/page-content.vue";
+import PhyrusWelcome from "./src/welcome/phyrus-welcome.vue";
 
 export {
     AppComponent,
-    AppPage,
     Utils,
     translate,
     http,
@@ -111,5 +112,7 @@ export {
     Back,
     Burger,
     Checkbox,
-    EventCalendar
+    EventCalendar,
+
+    PhyrusWelcome
 }

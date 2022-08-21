@@ -5,7 +5,6 @@ import { DrawerButton, DrawerInterface } from '../widgets/drawer/drawer';
 import { ZoomImageInterface } from '../widgets/zoom-image/zoom-image';
 import translate from './translator';
 import Cropper from '../modals/cropper/cropper.vue';
-import ModelSelect from '../modals/model-select/model-select.vue';
 import ScreenLoader from '../modals/screen-loader/screen-loader.vue';
 
 export default class App {
@@ -201,7 +200,7 @@ export default class App {
             App.displayAlert({
                 text: text,
                 cancelable: false,
-                icon: options && options.icon ? options.icon : 'exclamation',
+                icon: options && options.icon ? options.icon : undefined,
                 buttonLeft: {
                     text: options && options.no ? options.no : translate.get('generic.no'),
                     onClick: () => {
@@ -241,57 +240,6 @@ export default class App {
                 props: props
             });
 
-
-        });
-
-    }
-
-    static modelSelect(props: {
-        search: (text?: string) => Promise<any[]>,
-        item: (model: any) => {
-            component?: any,
-            props?: any,
-            content?: any,
-        },
-        emptyMessage?: string,
-        multiple?: boolean,
-        comparer?: (a: any, b: any) => boolean,
-        initial?: any|any[],
-        searchbar?: boolean,
-        confirmation?: (result: any) => Promise<any>
-    }) : Promise<any> {
-
-        return new Promise((resolve, reject) => {
-
-            let attrs : any = {
-                item: props.item,
-                search: props.search,
-                onSave: (selected: any) => {
-                    return resolve(selected);
-                },
-                confirmation: props.confirmation
-            };
-
-            if (props.emptyMessage) 
-            attrs['emptyMessage'] = props.emptyMessage;
-
-            if (props.multiple) 
-            attrs['multiple'] = props.multiple;
-
-            if (props.initial)
-            attrs['initial'] = props.initial;
-
-            if (props.comparer)
-            attrs['comparer'] = props.comparer;
-
-            if (props.searchbar) {
-                attrs['searchbar'] = true;
-            }
-
-            this.modal.open({
-                component: ModelSelect,
-                props: attrs
-            });
 
         });
 

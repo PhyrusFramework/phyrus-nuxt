@@ -59,7 +59,7 @@
         </div>
 
          <toggle v-if="type == 'toggle'"
-        value="value" @change="emit($event)" :size="size"/>
+        v-bind:value="value" v-on:input="emit($event)" :size="size"/>
 
         <textarea v-if="type == 'textarea'" 
         :disabled="isDisabled()"

@@ -451,11 +451,31 @@ export default {
      * Format number as text
      * 
      * @param num 
+     * @param decimals
      * @returns 
      */
-    formatNumber(num: number) {
-        if (!num) return 0;
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+    formatNumber(num: number|string, decimals: number = 2) : string {
+        if (!num) return '0';
+
+        let n = num;
+        if (typeof n == 'number') {
+            if (decimals > 0)
+                n = n.toFixed(decimals);
+            else
+                n = "" + Math.floor(n);
+        }
+        n = n.replace('.', ',');
+
+        if (!n.includes(',')) {
+            return n.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        const parts = n.split(',');
+        const ent = parts[0];
+        const dec = parts[1];
+
+        return ent.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.') + ',' + dec;
+        
     },
 
     /**

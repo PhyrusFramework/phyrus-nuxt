@@ -31,6 +31,12 @@ export default Vue.extend({
     return data;
   },
 
+  updated() {
+    if (this.table && !this.table._ref) {
+      this.table._ref = this;
+    }
+  },
+
   methods: {
 
     $t(key: string, parameters?: any) {

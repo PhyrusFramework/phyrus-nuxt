@@ -42,6 +42,7 @@ export default Vue.extend({
 
         setTab(tab: any) {
             this.$emit('input', tab.key);
+            this.$emit('change', tab.key);
 
             if (this.onTabSelected) {
                 this.onTabSelected(tab.key);

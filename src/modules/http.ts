@@ -191,10 +191,12 @@ const generateHTTP = () : HTTPClient => {
                     headers[key] = this.globalHeaders[key];
                 });
     
-                Object.keys(request.headers)
-                .forEach((key: string) => {
-                    headers[key] = request.headers[key];
-                });
+                if (request.headers) {
+                    Object.keys(request.headers)
+                    .forEach((key: string) => {
+                        headers[key] = request.headers[key];
+                    });
+                }
     
                 let dta : any = data;
                 if (headers['Content-Type'] == 'multipart/form-data') {
@@ -223,10 +225,15 @@ const generateHTTP = () : HTTPClient => {
                     headers: headers,
                     responseType: request.responseType ? request.responseType : 'json'
                 }).then( (response:any) => {
+
+                    const success = request.promise ? request.promise.resolve : resolve;
+                    const fail = request.promise ? request.promise.reject : reject;
+
                     if (!request.fullResponse)
-                        resolve(response.data);
+                        success(response.data);
                     else
-                        resolve(response);
+                        fail(response);
+                        
                 }).catch((error: any) => {
     
                     let err : HTTPError = {
@@ -243,15 +250,6 @@ const generateHTTP = () : HTTPClient => {
 
                     if (!this.checkTokenExpired) {
                         reject(err);
-                        return;
-                    }
-
-                    if (this.refreshingToken) {
-                        request.promise = {
-                            resolve: resolve,
-                            reject: reject
-                        }
-                        this.pendingRequests.push(request);
                         return;
                     }
 
@@ -272,19 +270,11 @@ const generateHTTP = () : HTTPClient => {
                         request.refreshConsumed = true;
                         this.nextRequestIsRefresh = true;
 
-                        const finishPendingRequests = () => {
-                            for(let r of this.pendingRequests) {
-                                r.promise!.reject();
-                            }
-                            this.pendingRequests = [];
-                        }
-
                         const tk = this.getRefreshToken();
                         
                         if (!tk) {
                             this.refreshingToken = false;
                             reject(err);
-                            finishPendingRequests();
                         }
 
                         if (!this.refreshToken) {
@@ -292,28 +282,36 @@ const generateHTTP = () : HTTPClient => {
                             return;
                         }
 
+                        request.promise = {
+                            resolve: resolve,
+                            reject: reject
+                        }
+                        this.pendingRequests.push(request);
+
                         this.refreshToken!(tk ? tk : undefined)
                         .then((refreshed) => {
 
                             this.refreshingToken = false;
 
                             if (!refreshed) {
-                                reject(err);
-                                finishPendingRequests();
+                                for(let r of this.pendingRequests) {
+                                    r.promise!.reject();
+                                }
                                 return;
                             }
 
-                            this.req(request);
                             for(let r of this.pendingRequests) {
                                 this.req(r);
                             }
+                            
                             this.pendingRequests = [];
 
                         })
                         .catch(() => {
                             this.refreshingToken = false;
-                            reject(err);
-                            finishPendingRequests();
+                            for(let r of this.pendingRequests) {
+                                r.promise!.reject();
+                            }
                         })
                         
 

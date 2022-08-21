@@ -7,7 +7,7 @@ import Config from './config';
 import App from './app';
 import store from './store';
 
-let AppComponent = Vue.extend({
+let cmp = Vue.extend({
 
     data() {
         return {
@@ -56,4 +56,14 @@ let AppComponent = Vue.extend({
     }
 
 });
+
+type VueType = typeof cmp;
+
+const AppComponent = () : VueType => {
+    return cmp.extend({
+        middleware: Config.defaultMiddleware,
+        layout: Config.defaultLayout
+    });
+}
+
 export default AppComponent;
