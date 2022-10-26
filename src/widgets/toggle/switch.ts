@@ -76,6 +76,7 @@ export default Vue.extend({
             if (this.onChange) {
                 this.onChange(v);
             }
+            this.$emit('change', v);
         },
 
         toggle() {

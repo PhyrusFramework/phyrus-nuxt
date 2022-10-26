@@ -14,6 +14,7 @@
             <div class="drawer-footer flex-row" v-if="buttonLeft || buttonRight">
 
                 <app-button v-if="buttonLeft" 
+                :class="buttonLeft.class"
                 @click="footerButtonClick(buttonLeft)" :lefticon="buttonLeft.icon ? buttonLeft.icon : ''"
                 :style="{'background-color': footerButtonColor(buttonLeft)}">
                     {{ buttonLeft.text }}
@@ -22,6 +23,7 @@
                 <div class="flex-grow"></div>
 
                 <app-button v-if="buttonRight"
+                :class="buttonRight.class"
                 @click="footerButtonClick(buttonRight)" :lefticon="buttonRight.icon ? buttonRight.icon : ''"
                 :style="{'background-color': footerButtonColor(buttonRight)}">
                     {{ buttonRight.text }}

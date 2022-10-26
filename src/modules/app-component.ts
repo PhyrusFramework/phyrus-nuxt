@@ -46,10 +46,6 @@ let cmp = Vue.extend({
             return App.modal.close();
         },
 
-        copyToClipboard(content: string) {
-            navigator.clipboard.writeText(content);
-        },
-
         middlewareCompleted() {
             return store.middlewareStatus;
         }

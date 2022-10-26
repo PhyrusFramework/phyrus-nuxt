@@ -8,6 +8,7 @@ import Editor from '../editor/editor.vue';
 import IconPopup from '../icon-popup/icon-popup.vue';
 import Calendar from '../calendar/calendar.vue';
 import Time from '../../modules/time';
+import Utils from '../../modules/utils';
 
 export default Vue.extend({
 
@@ -37,6 +38,7 @@ export default Vue.extend({
         'onSuggestionSelected',
         'value',
         'required',
+        'clearx',
 
         // Select
         'component',
@@ -70,6 +72,9 @@ export default Vue.extend({
 
         // Time
         'time',
+
+        // Date
+        'dateFormat',
 
         // Calendar
         'range'
@@ -117,10 +122,12 @@ export default Vue.extend({
                 time: ''
             }
 
-            if (this.time) {
-                let parts = this.time.split(' ');
+            if (this.time || this.value) {
+                const v = this.value ? this.value : this.time;
+
+                let parts = v.split(' ');
                 if (parts.length < 2) {
-                    parts = this.time.split('T');
+                    parts = v.split('T');
                 }
 
                 if (parts.length == 2) {
@@ -158,8 +165,16 @@ export default Vue.extend({
             });
 
             this.iti.telInput.addEventListener('keydown', ($e: any) => {
-                if ($e.keyCode == 9 || $e.key == 'Tab') {
-                    return;
+
+                if ([8, 9, 39, 37, 46].includes($e.keyCode)
+                || [
+                    'Tab',
+                    'BackSpace',
+                    'ArrowRight',
+                    'ArrowLeft',
+                    'Delete'
+                ].includes($e.key)) {
+                    return
                 }
 
                 const valid = "0123456789";
@@ -208,7 +223,6 @@ export default Vue.extend({
             if (this.type == 'country') {
 
                 let countries : any = countryData.getAllCountries();
-                countries['ES'].name = 'España';
 
                 if (this.defaultCountries) {
                     for(let country of this.defaultCountries) {
@@ -253,6 +267,16 @@ export default Vue.extend({
             this.$emit('change', result);
         },
 
+        getValue() {
+            let v = this.value;
+
+            if (this.type == 'date' && !this.dateFormat) {
+                v = v.format('YYYY-MM-DD');
+            }
+
+            return v;
+        },
+
         emit(value: any) {
 
             let v = value;
@@ -271,11 +295,30 @@ export default Vue.extend({
                     }
                 }
             }
+            else if (['date'].includes(this.type)) {
+
+                const t = new Time(v);
+
+                if (this.dateFormat) {
+                    v = t.format(this.dateFormat);
+                }
+                else {
+                    v = t;
+                }
+
+            }
+
+            if (this.length && typeof(v) == 'string' && this.type != 'editor' && v.length > this.length) {
+                v = v.substring(0, this.length);
+            }
 
             this.$emit('input', v);
 
-            if (this.length) {
-                this.character_count = v.length;
+            if (v && !['calendar'].includes(this.type)) {
+                if (this.type != 'editor')
+                    this.character_count = v.length;
+                else
+                    this.character_count = Utils.stripTags(v).length;
             }
 
             if (this.onChange) {
@@ -287,6 +330,10 @@ export default Vue.extend({
                 this.$forceUpdate();
         },
 
+        lengthOverpassed() {
+            return this.length && this.character_count > this.length;
+        },
+
         reload() {
             this.reloading = true;
             setTimeout(() => {
@@ -295,6 +342,12 @@ export default Vue.extend({
         },
 
         clear(value: any = '') {
+
+            if (this.type == 'calendar') {
+                (this.$refs.calendar as any).emit(null);
+                return;
+            }
+
             this.emit(value);
 
             if (['select'].includes(this.type)) {
@@ -399,6 +452,12 @@ export default Vue.extend({
         },
 
         emitCalendarDate(val: any) {
+
+            if (!val) {
+                this.emit(null);
+                return;
+            }
+
             if (!this.range)
                 this.emit(Time.instance(val));
             else
@@ -412,10 +471,14 @@ export default Vue.extend({
 
         calendarValueLabel() {
             if (!this.range)
-                return this.value ? this.value.date() : 'YYYY-MM-DD';
+                return this.value ? this.value.date() : (this.placeholder ? this.placeholder : 'DD/MM/YYYY');
 
-            if (!this.value) return '-';
+            if (!this.value) return this.placeholder;
             return this.value[0].date() + ' - ' + this.value[1].date();
+        },
+
+        clickOnCalendar() {
+            (this.$refs.iconPopup as any).toggle();
         }
 
     }

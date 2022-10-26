@@ -1,7 +1,7 @@
 import Alert from '../modals/alert/alert.vue';
-import { AppModalInterface } from '../widgets/app-modal/app-modal';
+import { AppModalInterface, ModalOptions } from '../widgets/app-modal/app-modal';
 import { AppNotificationsInterface } from '../widgets/app-notifications/app-notifications';
-import { DrawerButton, DrawerInterface } from '../widgets/drawer/drawer';
+import { DrawerButton, DrawerInterface, DrawerOptions } from '../widgets/drawer/drawer';
 import { ZoomImageInterface } from '../widgets/zoom-image/zoom-image';
 import translate from './translator';
 import Cropper from '../modals/cropper/cropper.vue';
@@ -44,21 +44,7 @@ export default class App {
             return App.drawer;
         },
 
-        open(options: {
-            component: any,
-            props?: any,
-            title?: string,
-            buttonLeft?: {
-                text: string,
-                onClick?: (ref: any) => void,
-                icon?: string
-            },
-            buttonRight?: {
-                text: string,
-                onClick?: (ref: any) => void,
-                icon?: string
-            }
-        }) {
+        open(options: DrawerOptions) {
             if (!this._ref) return;
 
             this._ref.open(options);
@@ -125,19 +111,18 @@ export default class App {
 
         modals: [],
     
-        open(options: {
-            component: any, 
-            props?: any, 
-            cancelable?: boolean,
-            width?: string,
-            class?: string,
-            noPadding?: boolean
-        }) {
+        open(options: ModalOptions) {
             if (!this._ref) {
                 return;
             }
 
             this._ref.open(options);
+        },
+
+        get current() : ModalType|null {
+            if (!this._ref) return null;
+            if (this._ref.modals.length == 0) return null;
+            return this._ref.modals[this._ref.modals.length - 1];
         },
     
         close() {
@@ -172,7 +157,7 @@ export default class App {
     static displayAlert(props: {
         text: string,
         cancelable?: boolean,
-        icon?: string,
+        icon?: string|null,
         buttonLeft?: {text: string, onClick: () => void},
         buttonRight?: {text: string, onClick: () => void},
         onClose?: () => void,
@@ -190,7 +175,7 @@ export default class App {
     }
 
     static confirmation(text: string, options?: {
-        icon?: string,
+        icon?: string|null,
         yes?: string,
         no?: string
     }) : Promise<any> {
@@ -200,7 +185,7 @@ export default class App {
             App.displayAlert({
                 text: text,
                 cancelable: false,
-                icon: options && options.icon ? options.icon : undefined,
+                icon: options ? options.icon : undefined,
                 buttonLeft: {
                     text: options && options.no ? options.no : translate.get('generic.no'),
                     onClick: () => {

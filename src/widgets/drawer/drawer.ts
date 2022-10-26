@@ -4,7 +4,8 @@ export type DrawerButton = {
     text: string,
     onClick?: (ref: any) => void,
     icon?: string,
-    enabled?: () => boolean
+    enabled?: () => boolean,
+    class?: string
 }
 
 export type DrawerOptions = {
@@ -67,16 +68,8 @@ export default Vue.extend({
             component: any,
             props?: any,
             title?: string,
-            buttonLeft?: {
-                text: string,
-                onClick?: () => void,
-                icon?: string
-            },
-            buttonRight?: {
-                text: string,
-                onClick?: () => void,
-                icon?: string
-            },
+            buttonLeft?: DrawerButton,
+            buttonRight?: DrawerButton,
             maxWidth?: string,
             onClose?: () => any
         }) {

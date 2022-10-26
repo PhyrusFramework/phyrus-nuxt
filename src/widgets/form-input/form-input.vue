@@ -6,7 +6,7 @@
         </div>
 
         <input v-if="!type || ['text', 'number', 'email', 'date', 'color'].includes(type)"
-        :class="{hideControls: hideControls}"
+        :class="{hideControls: hideControls || clearx}"
         :disabled="isDisabled()"
         :placeholder="placeholder" 
         :maxlength="length ? length : ''"
@@ -15,7 +15,7 @@
         :step="step"
         :type="type ? type : 'text'"
         @keyup.enter="onSubmit()"
-        v-bind:value="value"
+        v-bind:value="getValue()"
         @focus="focused()"
         v-on:input="emit($event.target.value)"
         ref="normalInput">
@@ -58,8 +58,10 @@
             <div>{{ option.content ? option.content : (option.label ? option.label : option.value) }}</div>
         </div>
 
-         <toggle v-if="type == 'toggle'"
-        v-bind:value="value" v-on:input="emit($event)" :size="size"/>
+        <toggle v-if="type == 'toggle'"
+        v-bind:value="value" 
+        v-on:input="emit($event)" 
+        :size="size"/>
 
         <textarea v-if="type == 'textarea'" 
         :disabled="isDisabled()"
@@ -99,6 +101,7 @@
         :component="component"
         :props="props"
         :beforeChange="beforeChange"
+        :clearx="clearx"
         @key="passEvent('key', $event)"/>
 
         <multiselect v-if="!reloading && type == 'select' && multiple" 
@@ -112,16 +115,23 @@
 
         <div class="form-input-calendar" v-if="type == 'calendar'">
             <div class="flex-row">
-                <div class="calendar-selected-label">{{ calendarValueLabel() }}</div>
-                <icon-popup icon="entypo/calendar" ref="iconPopup">
-                    <calendar v-model="pseudoValue" @change="emitCalendarDate(pseudoValue)"
-                    :range="range"/>
+                <div class="calendar-selected-label"
+                :style="{color: !value ? 'lightgray' : ''}"
+                @click="clickOnCalendar()">{{ calendarValueLabel() }}</div>
+                
+                <close-x v-if="value" style="margin-left: 5px" @click="clear(null)" />
+                
+                <icon-popup icon="entypo/calendar" ref="iconPopup" side="auto" 
+                :style="{'margin-left': value || placeholder ? '5px' : ''}">
+                    <calendar v-model="pseudoValue" 
+                    @change="emitCalendarDate(pseudoValue)"
+                    :range="range" ref="calendar"/>
                 </icon-popup>
             </div>
         </div>
 
         <div class="footer">
-            <div class="length" v-if="length">
+            <div class="length" v-if="length" :class="{overpassed: lengthOverpassed()}">
                 {{character_count}}/{{length}}
             </div>
 
@@ -136,6 +146,10 @@
                 <component v-if="suggestion.component" :is="suggestion.component" v-bind="suggestion.props" />
                 <div v-if="suggestion.content" v-html="suggestion.content" />
             </div>
+        </div>
+
+        <div class="clearx" v-if="clearx">
+            <close-x @click="clear()"/>
         </div>
     </div>
 </template>

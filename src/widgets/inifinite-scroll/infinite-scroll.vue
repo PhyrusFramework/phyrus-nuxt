@@ -1,5 +1,9 @@
 <template>
-    <div class="infinite-scroll custom-scrollbar" @scroll="handleScroll($event)" ref="container">
+    <div class="infinite-scroll custom-scrollbar" @scroll="handleScroll($event)" ref="container"
+    :style="{
+        'display': reverse ? 'flex' : 'block',
+        'flex-direction': reverse ? 'column-reverse' : ''
+    }">
         <slot />
         <div class="empty-message" v-if="emptyMessage && list && list.length == 0" v-html="emptyMessage"/>
         <loader v-if="!list || loading" />

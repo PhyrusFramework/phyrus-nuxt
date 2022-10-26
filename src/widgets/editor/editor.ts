@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { VueEditor } from "vue2-editor";
+import Utils from '../../modules/utils';
 
 export default Vue.extend({
 
@@ -25,6 +26,10 @@ export default Vue.extend({
     },
 
     methods: {
+
+        plainText() {
+            return Utils.stripTags(this.content);
+        },
 
         setContent(text: string) {
             this.content = text;
@@ -55,6 +60,12 @@ export default Vue.extend({
                 
                 [ 'link', 'image', 'video', 'formula', 'blockquote', 'code-block' ],
             ];
+
+            if (this.mode == 'basic') {
+                return [
+                    [ 'bold', 'italic', 'underline', 'strike', 'link', { list: "bullet" }]
+                ]
+            }
 
             // Mode = 'simple' || !mode
 

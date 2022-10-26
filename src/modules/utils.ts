@@ -358,6 +358,47 @@ export default {
     },
 
     /**
+     * Fetch local file.
+     * 
+     * @param path 
+     * @returns 
+     */
+    fetchFile(path: string) : Promise<File> {
+        return new Promise((resolve, reject) => {
+            fetch(path)
+            .then(r => r.blob())
+            .then((blob: Blob) => {
+
+                const format = blob.type;
+                const mimes = this.getMIMETypes();
+
+                let extension = '';
+                const keys = Object.keys(mimes);
+                for(let k of keys) {
+                    if (mimes[k] == format) {
+                        extension = '.' + k;
+                        break;
+                    }
+                }
+
+                const file = new File([blob], "file" + extension);
+                resolve(file);
+            })
+            .catch(reject);
+        })
+    },
+
+    /**
+     * Make URL to a local file
+     * 
+     * @param file 
+     * @returns string
+     */
+    fileToURL(file: File) {
+        return URL.createObjectURL(file);
+    },
+
+    /**
      * 
      * Convert base64 image to blob/file to be uploaded.
      * 
@@ -546,6 +587,43 @@ export default {
         let e = document.createElement('div');
         e.innerHTML = htmlText;
         return e.textContent ? e.textContent : '';
+    },
+
+    /**
+     * Copy content to clipboard
+     * 
+     * @param content 
+     */
+    copyToClipboard(content: string) {
+        navigator.clipboard.writeText(content);
+    },
+
+    /**
+     * Download file
+     * 
+     * @param file
+     */
+    downloadFile(file: File) {
+        const a = document.createElement('a');
+        document.body.appendChild(a);
+        const url = window.URL.createObjectURL(file);
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        }, 0)
+    },
+
+    /**
+     * Download blob
+     * 
+     * @param blob 
+     * @param name 
+     */
+    downloadBlob(blob: Blob, name: string) {
+        this.downloadFile(new File([blob], name));
     }
 
 }

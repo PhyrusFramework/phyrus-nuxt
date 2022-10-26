@@ -44,6 +44,20 @@ export default Vue.extend({
             }, 20);
         },
 
+        useRight() {
+            if (this.side === 'right') return true;
+            if (this.side === 'left') return true;
+
+            const el = (this.$refs.iconEl as any);
+            if (!el) return false;
+
+            const rect = el.getBoundingClientRect();
+            if (rect.left < window.innerWidth/2) {
+                return true;
+            }
+            return false;
+        },
+
         toggle() {
 
             this.open = !this.open;

@@ -5,7 +5,17 @@ export default Vue.extend({
 
   components: { SearchBar },
 
-  props: ['options', 'placeholder', 'value', 'inverted', 'onChange', 'disabled', 'comparer', 'component', 'props', 'beforeChange'],
+  props: ['options', 
+  'placeholder', 
+  'value', 
+  'inverted', 
+  'onChange', 
+  'disabled', 
+  'comparer', 
+  'component', 
+  'props', 
+  'beforeChange', 
+  'clearx'],
 
   data() {
 
@@ -13,12 +23,14 @@ export default Vue.extend({
       open: boolean,
       selected: any,
       search: string,
-      mouseOnSearch: boolean
+      mouseOnSearch: boolean,
+      openDisabled: boolean
     } = {
       open: false,
       selected: null,
       search: '',
-      mouseOnSearch: false
+      mouseOnSearch: false,
+      openDisabled: false
     }
 
     return data
@@ -82,6 +94,14 @@ export default Vue.extend({
         this.$emit('search', this.search);
       }
 
+    },
+
+    clearValue() {
+      this.openDisabled = true;
+      this.select({value: null});
+      setTimeout(() => {
+        this.openDisabled = false;
+      }, 20);
     },
 
     setDefault() {

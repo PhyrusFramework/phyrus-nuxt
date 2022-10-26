@@ -184,6 +184,10 @@
             justify-content: flex-end;
             padding: 5px 0;
             user-select: none;
+
+            &.overpassed {
+                color: red;
+            }
         }
 
         .error {
@@ -216,6 +220,10 @@
         }
     }
 
+    .iti__country-list {
+        z-index: 20;
+    }
+
     .suggestions {
         position: absolute;
         z-index: 50;
@@ -242,6 +250,15 @@
                 background-color: whitesmoke;
             }
         }
+    }
+
+    .clearx {
+        position: absolute;
+        right: 5px;
+        bottom: 0;
+        height: 60%;
+        display: flex;
+        align-items: center;
     }
 
     &.readonly {

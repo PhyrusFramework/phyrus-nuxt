@@ -34,5 +34,12 @@
         > div {
             font-size: 13px;
         }
+
+        .label {
+            .required {
+                color: red;
+            }
+        }
+
     }
 }

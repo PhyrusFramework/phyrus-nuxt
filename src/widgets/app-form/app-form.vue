@@ -1,5 +1,5 @@
 <template>
-    <div class="app-form" v-if="rows">
+    <div class="app-form" v-if="rows && !reloading">
 
         <div class="row row-padding" v-for="(row, index) in rows" :key="index">
 
@@ -19,15 +19,23 @@
                     @change="valueChanged(col.field)"/>
 
                     <dropzone class="photo-picker" :clickable="true" 
-                    @change="valueChanged(field)"
+                    @change="valueChanged(col.field)"
                     v-bind="col.field.props ? col.field.props : {}"
                     v-if="['image', 'photo'].includes(col.field.type)" @drop="fileSelected(col.field, $event)">
                         <circle-image size="120" :src="col.field.fileSrc"/>
-                        <div>{{ $t('media.select') }}</div>
+
+                        <div class="label" v-if="col.field.props.label">
+                            <span v-if="!col.field.props.label">{{ $t('media.select') }}</span>
+                            <span v-else>{{ col.field.props.label }}</span>
+                            <span class="required" v-if="col.field.required">*</span>
+                        </div>
                     </dropzone>
 
                     <div class="form-input" v-if="col.field.type == 'custom'">
-                        <div class="form-input-label" v-if="col.field.props.label">{{ col.field.props.label }}</div>
+                        <div class="form-input-label" v-if="col.field.props.label">
+                            <span>{{ col.field.props.label }}</span>
+                            <span class="required" v-if="col.field.required">*</span>
+                        </div>
                         <div v-if="col.field.content" v-html="col.field.content(col.field.model)" v-bind="col.field.props ? col.field.props : {}"/>
                         <component v-if="col.field.component" :is="col.field.component" v-bind="col.field.props"/>
                     </div>

@@ -1,5 +1,5 @@
 <template>
-    <svg-icon name="heroicons-solid/x" :style="getStyle()" @click="doClick()"/>
+    <svg-icon class="close-x" name="heroicons-solid/x" :style="getStyle()" @click="doClick()"/>
 </template>
 
 <script lang="ts">

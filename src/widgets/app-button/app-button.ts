@@ -6,7 +6,12 @@ export default Vue.extend({
 
     components: { Loader },
 
-    props: [ 'iconleft', 'iconright', 'onClick', 'loading', 'disabled', 'content' ],
+    props: [ 'iconleft', 
+    'iconright', 
+    'onClick', 
+    'loading', 
+    'disabled', 
+    'content' ],
 
     data() { 
 

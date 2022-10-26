@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-type ModalType = {
+export type ModalType = {
     component: any,
     componentProps: any,
     cancelable: boolean,
@@ -12,7 +12,7 @@ type ModalType = {
     onClose?: () => void
 }
 
-type ModalOptions = {
+export type ModalOptions = {
     component: any, 
     props?: any, 
     cancelable?: boolean,
@@ -28,9 +28,9 @@ export type AppModalInterface = {
     _ref: any,
     setReference: (ref: any) => void,
 
-    modals: ModalType[],
-
     open: (options: ModalOptions) => void,
+
+    current: ModalType|null,
 
     close: () => Promise<any>
 

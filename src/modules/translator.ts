@@ -7,6 +7,8 @@ class Translator {
     currentLanguage = 'en';
     translations : any = {}
 
+    cache: any = {}
+
     initialize(locales: any, defaultLanguage: string) {
         this.locales = Utils.merge(defaultLocales, locales);
 
@@ -19,12 +21,17 @@ class Translator {
 
     changeLanguage(language: string) {
         if (!(Object.keys(this.locales)).includes(language)) return;
+        this.cache = {};
         this.currentLanguage = language;
         this.translations = this.locales[this.currentLanguage];
     }
 
     get(key: string, parameters?: any) {
-        let trans = Utils.dotNotation(this.translations, key);
+        let trans = 
+        this.cache[key] ? this.cache[key] :
+        Utils.dotNotation(this.translations, key);
+
+        this.cache[key] = trans;
 
         if (parameters) {
             Object.keys(parameters).forEach((k: string) => {

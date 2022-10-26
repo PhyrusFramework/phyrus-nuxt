@@ -6,7 +6,7 @@
             <div class="badge" v-if="badge">{{ badge }}</div>
 
             <div class="popup" :style="{opacity: opacity}"
-            :class="{open: open, right: side === 'right'}"
+            :class="{open: open, right: useRight()}"
             @click="preventClose()">
 
                 <div v-if="content" class="content-html" v-html="content"/>

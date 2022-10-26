@@ -46,6 +46,10 @@ export default Vue.extend({
 
         emit(value: any) {
 
+            if (value == null) {
+                this.rangeTimes = [null, null];
+            }
+
             let prev = this.selected;
             this.selected = value;
 
@@ -73,20 +77,58 @@ export default Vue.extend({
             if (!this.range) {
                 this.emit(day.full);
             } else {
+
+                // If nothing selected yet, set first date
                 if (!this.selected) {
                     this.selected = [day.full, null];
                     this.rangeTimes[0] = Time.instance(day.full);
                 } else {
+
+                    // If selected the same date as the first one
                     if (day.full == this.selected[0]) {
+                        // Unselect everything
                         this.selected = null;
                         this.rangeTimes = [null, null];
-                    } else if (this.selected[1] == day.full) {
+                    } 
+                    
+                    // If selected the same date as the second one
+                    else if (this.selected[1] == day.full) {
+                        // Unselect the second
                         this.selected = [this.selected[0], null];
                         this.rangeTimes = [this.rangeTimes[0], null];
-                    } else {
-                        let val = [this.selected[0], day.full];
-                        this.rangeTimes[1] = Time.instance(day.full);
-                        this.emit(val);
+                    } 
+                    
+                    // If it's a different date to first and second
+                    else {
+
+                        let t1 = this.rangeTimes[0];
+                        let t2 = Time.instance(day.full);
+
+                        // If there was a second date selected
+                        if (this.selected[1]) {
+                            this.selected = [day.full, null];
+                            this.rangeTimes = [t2, null];
+                        } 
+                        
+                        // If second date was null
+                        else {
+                            let val = [this.selected[0], day.full];
+    
+                            // If new date is previous to the first one
+                            if (t1!.isAfter(t2)) {
+                                // Invert
+                                val = [day.full, this.selected[0]];
+                                this.rangeTimes[0] = t2;
+                                this.rangeTimes[1] = t1;
+                            } 
+                            
+                            else {
+                                this.rangeTimes[1] = t2;
+                            }
+
+                            this.emit(val);
+                        }
+
                     }
                 }
             }

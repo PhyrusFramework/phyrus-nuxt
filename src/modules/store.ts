@@ -1,22 +1,78 @@
 
 const Store : any = {
 
-    get(key:string, def: any = null) {
-        if ((this as any)[key]) {
-            return (this as any)[key];
+    _getters: {},
+    getter(key: string, loader?: () => Promise<any>) {
+
+        if (!this._getters[key]) {
+            this._getters[key] = {
+                value: undefined,
+                loader,
+                listeners: [],
+                status: 'none'
+            }
         }
-        return def;
+        else {
+            this._getters[key].loader = loader;
+
+            if (this._getters[key].listeners.length > 0) {
+                this.get(key);
+            }
+        }
+
     },
 
-    set(key: string, value: any) {
-        (this as any)[key] = value;
+    clear(key:string) {
+        delete this._getters[key];
     },
 
-    has(key: string) {
-        if ((this as any)[key] === undefined) {
-            return false;
-        }
-        return true;
+    reload(key: string) {
+        this.clear(key);
+        return this.get(key);
+    },
+
+    get(key:string, loader?: () => Promise<any>) {
+        return new Promise((resolve, reject) => {
+
+            if (!this._getters[key]) {
+                this.getter(key, loader);
+            }
+    
+            const g = this._getters[key];
+
+            if (g.value === undefined) {
+
+                if ((g.status == 'none' && !g.loader) || g.status == 'loading') {
+                    g.listeners.push(resolve);
+                } else if (g.loader) {
+
+                    g.loader()
+                    .then((value: any) => {
+
+                        g.status == 'loaded';
+                        g.value = value;
+
+                        g.listeners.push(resolve);
+                        for(let r of g.listeners)
+                            r(g.value);
+                        g.listeners = [];
+
+                    });
+
+                }
+
+            } else {
+
+                g.listeners.push(resolve);
+
+                for(let r of g.listeners)
+                    r(g.value);
+                
+                g.listeners = [];
+
+            }
+
+        });
     },
 
     middlewareStatus: false

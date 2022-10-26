@@ -10,17 +10,19 @@ export default Vue.extend({
 
     components: { FormInput, Dropzone, CircleImage },
 
-    props: ['form'],
+    props: ['form', 'debug'],
 
     data() {
         let data : {
             rows: (any[])[]|null,
             previousValues: any
-            valuesChanged: string[]
+            valuesChanged: string[],
+            reloading: boolean
         } = {
             rows: null,
             previousValues: {},
-            valuesChanged: []
+            valuesChanged: [],
+            reloading: false
         }
         return data;
     },
@@ -30,6 +32,13 @@ export default Vue.extend({
     },
 
     methods: {
+
+        reload() {
+            this.reloading = true;
+            setTimeout(() => {
+                this.reloading = false;
+            }, 5);
+        },
 
         initialize(inmediate: boolean = false, copyPreviousValues: boolean = false) {
 
@@ -287,29 +296,41 @@ export default Vue.extend({
                     if (!col.field.error) continue;
                     col.field.error = null;
 
+                    const setValidation = (val: any) => {
+                        col.field.error = val;
+
+                        if (val && this.debug) {
+                            console.log("AppForm - Debug. Error in validation", col.field, val);
+                        }
+                    }
+
                     if (!col.field.condition()) {
                         continue;
                     }
 
                     if (!col.field.validate) {
                         if (col.field.required && !val) {
-                            col.field.error = translate.get('forms.errors.required');
+                            setValidation(translate.get('forms.errors.required'));
                         }
 
                         else if (col.field.type == 'email' && 
                             !Validator.for(val)
                             .isEmail()
                             .validate()) {
-
-                            col.field.error = translate.get('forms.errors.email');
+                                setValidation(translate.get('forms.errors.email'));
                         }
 
                         continue;
                     }
 
                     let res = col.field.validate(val);
-                    if (res) {
-                        col.field.error = res;
+                    if (typeof res == 'object' && res.then) {
+                        res.then((val: any) => {
+                            setValidation(val);
+                        });
+                    }
+                    else {
+                        setValidation(res);
                     }
                 }
             }
@@ -325,18 +346,26 @@ export default Vue.extend({
                 for(let col of row) {
 
                     const val = col.field.model[col.field.name];
-
                     col.field.error = null;
 
-                    if (!col.field.condition()) {
+                    const setValidation = (val: any) => {
+                        col.field.error = val;
+
+                        if (val) {
+                            someError = true;
+                            if (this.debug)
+                                console.log("AppForm - Debug. Error in validation", col, val);
+                        }
+                    }
+
+                    if (col.field.condition && !col.field.condition()) {
                         continue;
                     }
 
                     if (!col.field.validate) {
 
                         if (col.field.required && !val) {
-                            someError = true;
-                            col.field.error = translate.get('forms.errors.required');
+                            setValidation(translate.get('forms.errors.required'));
                         }
 
                         else if (col.field.type == 'email' && 
@@ -344,8 +373,7 @@ export default Vue.extend({
                             .isEmail()
                             .validate()) {
 
-                            someError = true;
-                            col.field.error = translate.get('forms.errors.email');
+                            setValidation(translate.get('forms.errors.email'));
                         }
 
                         if (someError && !all) {
@@ -357,9 +385,13 @@ export default Vue.extend({
                     }
 
                     let res = col.field.validate(val);
-                    if (res) {
-                        col.field.error = res;
-                        someError = true;
+                    if (typeof res == 'object' && res.then) {
+                        res.then((val: any) => {
+                            setValidation(val);
+                        });
+                    }
+                    else {
+                        setValidation(res);
                         if (!all) {
                             this.$forceUpdate();
                             return false;

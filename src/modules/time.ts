@@ -77,8 +77,8 @@ export default class Time {
         return parseInt(this._moment.format("X"));
     }
 
-    datetime() {
-        return this._moment.format("YYYY-MM-DD HH:mm:ss");
+    datetime(separator:string = ' ') {
+        return this._moment.format("YYYY-MM-DD"+ separator +"HH:mm:ss");
     }
 
     time() {
@@ -93,8 +93,12 @@ export default class Time {
         return this._moment.format("ddd D MMMM YYYY");
     }
 
-    ago() {
+    secondsElapsed() {
         return Moment.duration( Moment(new Date()).diff(this._moment) ).asSeconds()
+    }
+
+    ago() {
+        return this._moment.fromNow();
     }
 
     get daysThisMonth() : number {

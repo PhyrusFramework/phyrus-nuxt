@@ -2,7 +2,13 @@ import Vue from 'vue';
 
 export default Vue.extend({
 
-    props: ['onDrop', 'clickable', 'multiple', 'maxSize', 'onSizeExceeded', 'accept', 'disabled' ],
+    props: ['onDrop', 
+    'clickable', 
+    'multiple', 
+    'maxSize', 
+    'onSizeExceeded', 
+    'accept', 
+    'disabled' ],
 
     methods: {
         triggerInput() {
@@ -57,9 +63,10 @@ export default Vue.extend({
                 }
             }
 
+            this.$emit('input', files.length > 0 ? files[0] : null);
             this.$emit('drop', files);
             this.$emit('change', files);
-            this.$emit('input', files.length > 0 ? files[0] : null);
+            (this.$refs.inputFile as any).value = '';
         },
 
         clear() {

@@ -5,15 +5,17 @@ export default Vue.extend({
 
     components: {Loader},
 
-    props: [ 'onLoadMore', 'threshold', 'list', 'emptyMessage' ],
+    props: [ 'onLoadMore', 'threshold', 'list', 'emptyMessage', 'reverse', 'scroller' ],
 
     data() {
         let data : {
             loading: boolean,
-            finished: boolean
+            finished: boolean,
+            scrollPosition: number
         } = {
             loading: false,
-            finished: false
+            finished: false,
+            scrollPosition: 0
         }
 
         return data;
@@ -29,16 +31,43 @@ export default Vue.extend({
 
     methods: {
 
+        scrollTo(position: number) {
+            (this.$refs.container as any).scrollTop = position;
+        },
+
+        el() {
+            return this.scroller ? this.scroller : window;
+        },
+
         detectScroll() {
 
-            let position = window.scrollY + window.innerHeight;
+            const e = this.el();
+
+            let position = 0;
+            if (this.scroller) {
+                position = e.scrollTop + e.clientHeight;
+            } else {
+                position = e.scrollY + e.innerHeight;
+            }
+            
             let mark = (this.$refs.mark as any);
             let container = (this.$refs.container as any);
             let threshold = this.threshold ? this.threshold : 50;
 
-            if (position + container.scrollTop >= mark.offsetTop - threshold) {
-                return true;
+            this.scrollPosition = container.scrollTop;
+            this.$emit('scrolling', this.scrollPosition);
+
+            if (!this.reverse) {
+                if (position + container.scrollTop >= mark.offsetTop - threshold) {
+                    return true;
+                }
+            } else {
+                if (container.scrollTop <= mark.offsetTop + threshold) {
+                    return true;
+                }
             }
+
+            return false;
 
         },
 
@@ -48,15 +77,9 @@ export default Vue.extend({
             if (this.loading) return;
             if (this.finished) return;
 
-            // New method
             if (this.detectScroll()) {
                 this.load();
             }
-
-            // Old method
-            /*if (Utils.scrollBottomReached(e, this.threshold)) {
-                this.load();
-            }*/
 
         },
 
