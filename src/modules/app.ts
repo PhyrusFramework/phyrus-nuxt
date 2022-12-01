@@ -1,5 +1,5 @@
 import Alert from '../modals/alert/alert.vue';
-import { AppModalInterface, ModalOptions } from '../widgets/app-modal/app-modal';
+import { AppModalInterface, ModalOptions, ModalType } from '../widgets/app-modal/app-modal';
 import { AppNotificationsInterface } from '../widgets/app-notifications/app-notifications';
 import { DrawerButton, DrawerInterface, DrawerOptions } from '../widgets/drawer/drawer';
 import { ZoomImageInterface } from '../widgets/zoom-image/zoom-image';
@@ -108,8 +108,6 @@ export default class App {
         setReference(ref: any) {
             this._ref = ref;
         },
-
-        modals: [],
     
         open(options: ModalOptions) {
             if (!this._ref) {

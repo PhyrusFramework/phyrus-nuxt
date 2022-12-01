@@ -1,6 +1,6 @@
 {
   "name": "phyrus-nuxt",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Nuxt Phyrus library.",
   "main": "index.ts",
   "types": "index.d.ts",
