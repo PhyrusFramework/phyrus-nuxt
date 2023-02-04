@@ -266,10 +266,6 @@ const generateHTTP = () : HTTPClient => {
                             return;
                         }
 
-                        this.refreshingToken = true;
-                        request.refreshConsumed = true;
-                        this.nextRequestIsRefresh = true;
-
                         const tk = this.getRefreshToken();
                         
                         if (!tk) {
@@ -287,6 +283,14 @@ const generateHTTP = () : HTTPClient => {
                             reject: reject
                         }
                         this.pendingRequests.push(request);
+
+                        if (this.refreshingToken) {
+                            return;
+                        }
+
+                        this.refreshingToken = true;
+                        request.refreshConsumed = true;
+                        this.nextRequestIsRefresh = true;
 
                         this.refreshToken!(tk ? tk : undefined)
                         .then((refreshed) => {

@@ -88,10 +88,10 @@ export default Vue.extend({
 
             let popup = (obj: any) => {
                 App.displayAlert({
-                    text: translate.get(obj.text),
+                    text: obj.text,
                     cancelable: false,
-                    buttonLeft: {
-                        text: translate.get('generic.yes'),
+                    buttonRight: {
+                        text: obj.yes ? obj.yes : translate.get('generic.yes'),
                         onClick: () => {
                             this.setValue(!this.value);
 
@@ -100,8 +100,8 @@ export default Vue.extend({
                             }
                         }
                     },
-                    buttonRight: {
-                        text: translate.get('generic.no'),
+                    buttonLeft: {
+                        text: obj.no ? obj.no : translate.get('generic.no'),
                         onClick: () => {}
                     }
                 })

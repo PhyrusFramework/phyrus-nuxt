@@ -69,6 +69,7 @@ export default Vue.extend({
 
         // Editor
         'mode',
+        'toolbar',
 
         // Time
         'time',

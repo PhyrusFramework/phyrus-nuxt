@@ -110,7 +110,9 @@
         :disabled="isDisabled()"
         @input="emit($event)" :comparer="comparer"/>
 
-        <editor v-if="type == 'editor'" :mode="mode ? mode : 'simple'" :value="value"
+        <editor v-if="type == 'editor'" :mode="mode ? mode : 'simple'" 
+        :value="value"
+        :toolbar="toolbar"
         @input="emit($event)"/>
 
         <div class="form-input-calendar" v-if="type == 'calendar'">

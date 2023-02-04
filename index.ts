@@ -52,6 +52,7 @@ import Checkbox from "./src/widgets/checkbox/checkbox.vue";
 import Validator from "./src/modules/validator";
 import PageContent from "./src/widgets/page-content/page-content.vue";
 import PhyrusWelcome from "./src/welcome/phyrus-welcome.vue";
+import Store from "./src/modules/store";
 
 export {
     AppComponent,
@@ -62,6 +63,7 @@ export {
     Config,
     App,
     Storage,
+    Store,
     Time,
     EventListener,
     Validator,

@@ -4,8 +4,9 @@
     position: relative;
     border-radius: 3px;
 
-    svg {
+    > svg {
         transition: transform .3s;
+        transform: rotate(90deg);
     }
 
     &.background-effect:hover {

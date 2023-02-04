@@ -6,7 +6,8 @@
             <div v-if="!component" v-html="selected ? (selected.content ? selected.content : selected.value) : (placeholder ? placeholder : '')"/>
             <component v-if="component" :is="component" v-bind="props" :option="selected"/>
         </div>
-        <svg-icon name="heroicons-solid/chevron-down" class="text-primary" />
+        <svg-icon v-if="!clearx || !selected" name="heroicons-solid/chevron-down" />
+        <svg-icon v-else name="heroicons-solid/x" @click="select({value: null})"/>
     </div>
 
     <div class="slider-select-dropdown" v-if="options" ref="dropdown">

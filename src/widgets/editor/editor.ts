@@ -4,7 +4,7 @@ import Utils from '../../modules/utils';
 
 export default Vue.extend({
 
-    props: ['value', 'mode'],
+    props: ['value', 'mode', 'toolbar'],
 
     components: { VueEditor },
 
@@ -45,6 +45,10 @@ export default Vue.extend({
         },
 
         getToolbar() {
+
+            if (this.toolbar) {
+                return this.toolbar;
+            }
 
             if (this.mode == 'advanced')
             return [

@@ -72,6 +72,7 @@ export default Vue.extend({
 
       doBlur($event: any) {
         setTimeout(() => {
+          this.suggestions = null;
           this.$emit('blur', $event);
         }, 100);
       },
