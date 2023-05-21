@@ -17,6 +17,7 @@
         @keyup.enter="onSubmit()"
         v-bind:value="getValue()"
         @focus="focused()"
+        @blur="blurred()"
         v-on:input="emit($event.target.value)"
         ref="normalInput">
 
@@ -70,6 +71,7 @@
         :maxlength="length ? length : ''"
         v-bind:value="value"
         @focus="focused()"
+        @blur="blurred()"
         v-on:input="emit($event.target.value)"
         ref="textareaInput"/>
 
@@ -83,6 +85,7 @@
             v-on:input="emit($event.target.value)"
             :disabled="isDisabled()"
             @focus="focused()"
+            @blur="blurred()"
             @keyup.enter="onSubmit()"
             ref="passwordInput">
 
@@ -111,8 +114,12 @@
         @input="emit($event)" :comparer="comparer"/>
 
         <editor v-if="type == 'editor'" :mode="mode ? mode : 'simple'" 
+        ref="editorInput"
         :value="value"
         :toolbar="toolbar"
+        @change="passEvent('write', $event)"
+        @focus="focused()"
+        @blur="blurred()"
         @input="emit($event)"/>
 
         <div class="form-input-calendar" v-if="type == 'calendar'">

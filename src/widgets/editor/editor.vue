@@ -1,8 +1,11 @@
 <template>
     <vue-editor v-model="content"
-    @text-change="emit()" 
+    ref="editor"
+    @text-change="emit($event)" 
     @image-added="emit()" 
     @image-removed="emit()"
+    @focus="passEmit('focus', $event)"
+    @blur="passEmit('blur', $event)"
     :editor-toolbar="getToolbar()"/>
 </template>
 

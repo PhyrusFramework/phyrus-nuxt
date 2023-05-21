@@ -1,13 +1,14 @@
 <template>
-    <div class="dots-menu-button" :class="{open: open, 
-    'background-effect': background !== false && background != 'false',
-    'effect-grow': !effect || effect == 'grow',
-    'effect-slide': effect == 'slide'}">
+    <div class="dots-menu-button" :class="{
+        open: open, 
+        'background-effect': background !== false && background != 'false',
+        'effect-grow': !effect || effect == 'grow',
+        'effect-slide': effect == 'slide'
+    }">
         <svg-icon
             @click="openMenu()"
             :name="effect == 'slide' ? 'heroicons-solid/chevron-down' : 'heroicons-solid/dots-horizontal'"
             :class="{'text-gray': !color, 'text-primary': color}"
-            class="toggle w-6 h-6 justify-self-end group-hover:text-primary"
             :style="btnStyle"/>
 
         <div class="dots-float-menu" v-if="options">

@@ -33,6 +33,7 @@ export default Vue.extend({
         'disabled',
         'readonly',
         'onFocus',
+        'onBlur',
         'suggestions',
         'suggestionsKey',
         'onSuggestionSelected',
@@ -372,6 +373,14 @@ export default Vue.extend({
             }
         },
 
+        blurred() {
+            this.$emit('blur', this);
+
+            if (this.onBlur) {
+                this.onBlur(this);
+            }
+        },
+
         selectSuggestion(s: any) {
 
             if (!this.onSuggestionSelected) return;
@@ -390,6 +399,10 @@ export default Vue.extend({
 
             else if (this.type == 'textarea') {
                 (this.$refs.textareaInput as any).focus();
+            }
+
+            else if (this.type == 'editor') {
+                (this.$refs.editorInput as any).focus();
             }
 
             else if (!this.type || ['text', 'number', 'email', 'date', 'color'].includes(this.type)) {

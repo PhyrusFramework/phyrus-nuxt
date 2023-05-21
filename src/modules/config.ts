@@ -8,7 +8,6 @@ export default class Config {
     static defaultLanguage: string;
     static defaultLayout: string = 'default';
     static defaultMiddleware: string = 'default';
-    static theme: any = {};
     static _original: any = {}
 
     // CONSTRUCTOR
@@ -23,34 +22,23 @@ export default class Config {
         else this.defaultLanguage = navigator.language.substr(0, 2);
         if (config.defaultLayout) this.defaultLayout = config.defaultLayout;
         if (config.defaultMiddleware) this.defaultMiddleware = config.defaultMiddleware;
-        if (config.theme) {
-            this.theme = config.theme;
-            this.defineCSSvariables();
+        if (config.googleFonts) {
+            for(let font of config.googleFonts) {
+                if (!font.applyTo) continue;
+    
+                if (font.applyTo == '*') {
+                    document.body.style.setProperty("font-family", font.family + ", sans-serif");
+                } else {
+                    let style = document.createElement('style');
+                    style.innerHTML = font.applyTo + " { font-family: '" + font.family + "' }";
+                    document.getElementsByTagName('head')[0].appendChild(style);
+                }
+            }
         }
     }
 
     static get() : any {
         return this._original;
-    }
-
-    private static defineCSSvariables() {
-
-        Object.keys(this.theme.variables).forEach((k: string) => {
-            document.body.style.setProperty("--" + k, this.theme.variables[k]);
-        });
-
-        for(let font of this.theme.fonts) {
-            if (!font.applyTo) continue;
-
-            if (font.applyTo == '*') {
-                document.body.style.setProperty("font-family", font.family + ", sans-serif");
-            } else {
-                let style = document.createElement('style');
-                style.innerHTML = font.applyTo + " { font-family: '" + font.family + "' }";
-                document.getElementsByTagName('head')[0].appendChild(style);
-            }
-        }
-
     }
 
 }
